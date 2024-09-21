@@ -15,16 +15,17 @@ LED_STATE = 'OFF'  # Variable to track the current state of the LED
 
 @app.route('/')
 def index():
-    """Render the main dashboard with the current LED state."""
+    # """Render the main dashboard with the current LED state."""
     return render_template('index.html', led_state=LED_STATE)
 
 @app.route('/toggle_led', methods=['POST'])
 def toggle_led():
-    """Toggle the LED state based on the request from the frontend."""
+    # """Toggle the LED state based on the request from the frontend."""
     global LED_STATE  # Use the global variable to keep track of the LED state
 
     # Get the state from the JSON request
     data = request.get_json()
+    print(data['state'])
     if data['state'] == 'ON':
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
