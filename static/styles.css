@@ -1,0 +1,117 @@
+/* General styles for the body */
+body {
+    font-family: Arial, sans-serif;
+    /* Font style for the entire page */
+}
+
+/* Sidebar styles */
+.sidebar {
+    height: 100vh;
+    /* Full height of the viewport */
+}
+
+/* Styles for the switch (toggle button) */
+.switch {
+    position: relative;
+    /* Positioning context for the switch */
+    display: inline-block;
+    /* Inline block for layout */
+    width: 60px;
+    /* Width of the switch */
+    height: 34px;
+    /* Height of the switch */
+}
+
+/* Hide the default checkbox */
+.switch input {
+    display: none;
+    /* Hide the checkbox input */
+}
+
+/* Slider styles */
+.slider {
+    position: absolute;
+    /* Absolute positioning for the slider */
+    cursor: pointer;
+    /* Change cursor to pointer on hover */
+    top: 0;
+    /* Align to top */
+    left: 0;
+    /* Align to left */
+    right: 0;
+    /* Align to right */
+    bottom: 0;
+    /* Align to bottom */
+    background-color: #ccc;
+    /* Default background color */
+    border-radius: 34px;
+    /* Rounded corners */
+    transition: background-color 0.4s;
+    /* Smooth transition for background color */
+}
+
+/* Before pseudo-element for the slider (the circular knob) */
+.slider:before {
+    position: absolute;
+    /* Absolute positioning for the knob */
+    content: "";
+    /* Required content property */
+    height: 26px;
+    /* Height of the knob */
+    width: 26px;
+    /* Width of the knob */
+    left: 4px;
+    /* Left position */
+    bottom: 4px;
+    /* Bottom position */
+    background-color: white;
+    /* Knob color */
+    border-radius: 50%;
+    /* Make it circular */
+    transition: transform 0.4s;
+    /* Smooth transition for the knob */
+}
+
+/* Styles when the switch is checked (ON state) */
+input:checked+.slider {
+    background-color: #d9534f;
+    /* Red background when ON */
+}
+
+/* Styles for the knob when the switch is checked (ON state) */
+input:checked+.slider:before {
+    transform: translateX(26px);
+    /* Move knob to the right */
+}
+
+/* Lightbulb styles */
+.lightbulb {
+    margin-top: 20px;
+    /* Top margin */
+    width: 100px;
+    /* Width of the lightbulb */
+    height: 100px;
+    /* Height of the lightbulb */
+    border-radius: 50%;
+    /* Make it circular */
+    position: relative;
+    /* Positioning context for shadow */
+    box-shadow: 0 0 30px rgba(255, 255, 0, 0.5);
+    /* Glow effect */
+    transition: all 0.4s ease;
+    /* Smooth transition for state changes */
+}
+
+/* Styles for the lightbulb when it is ON */
+.lightbulb-on {
+    background-color: #ffeb3b;
+    /* Yellow color when ON */
+}
+
+/* Styles for the lightbulb when it is OFF */
+.lightbulb-off {
+    background-color: #ccc;
+    /* Grey color when OFF */
+    box-shadow: none;
+    /* No glow effect when OFF */
+}
