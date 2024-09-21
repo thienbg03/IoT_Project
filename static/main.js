@@ -2,7 +2,6 @@
 function toggleLED() {
     // Determine if the switch is on or off
     const isOn = document.getElementById('led-switch').checked ? 'ON' : 'OFF';
-
     // Send AJAX request to toggle the LED state
     $.ajax({
         url: '/toggle_led',
