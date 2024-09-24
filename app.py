@@ -44,4 +44,4 @@ def cleanup():
 
 # Replace with your Raspberry Pi's IP address if necessary
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)  # Run the Flask application
+    app.run(host='0.0.0.0', port=8000, debug=True)  # Run the Flask application
