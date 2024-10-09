@@ -1,6 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 import RPi.GPIO as GPIO
 
+from modules.email import send_email  # Import the send_email function
+from threading import Thread
+
+
 # Initialize the Flask application
 app = Flask(__name__)
 
@@ -16,6 +20,7 @@ LED_STATE = 'OFF'  # Variable to track the current state of the LED
 @app.route('/')
 def index():
     # """Render the main dashboard with the current LED state."""
+    #send_email_trigger(28)
     return render_template('index.html', led_state=LED_STATE)
 
 @app.route('/toggle_led', methods=['POST'])
@@ -41,6 +46,16 @@ def cleanup():
     """Clean up the GPIO pins. It doesn't work for some reason"""
     GPIO.cleanup()  # Reset the GPIO pins to their default state
     return "GPIO cleanup done."  # Confirmation message
+
+def send_email_trigger(temperature):
+    recipient = 'santisinsight@gmail.com'
+
+    # Run send_email in a separate thread
+    email_thread = Thread(target=send_email, args=(recipient, temperature))
+    email_thread.start()
+
+    # Immediately return a response while the email is being sent
+    return jsonify({'message': 'Email is being sent.'}), 202
 
 # Replace with your Raspberry Pi's IP address if necessary
 if __name__ == '__main__':
