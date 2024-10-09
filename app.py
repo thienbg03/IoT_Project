@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request, jsonify
 import RPi.GPIO as GPIO
+from routes.dht11_routes import dht11_blueprint
 
 # Initialize the Flask application
 app = Flask(__name__)
+
+app.register_blueprint(dht11_blueprint)
 
 # Set up GPIO
 led_pin = 17  # Define the GPIO pin number for the LED
