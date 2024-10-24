@@ -2,6 +2,10 @@ from flask import Flask, render_template, request, jsonify
 import RPi.GPIO as GPIO
 from routes.dht11_routes import dht11_blueprint
 
+from modules.email import send_email, receive_email  # Import the send_email function
+from threading import Thread
+
+
 # Initialize the Flask application
 app = Flask(__name__)
 
@@ -19,6 +23,8 @@ LED_STATE = 'OFF'  # Variable to track the current state of the LED
 @app.route('/')
 def index():
     # """Render the main dashboard with the current LED state."""
+    #test_receive_email()
+    #send_email_trigger(28)
     return render_template('index.html', led_state=LED_STATE)
 
 @app.route('/toggle_led', methods=['POST'])
@@ -45,6 +51,21 @@ def cleanup():
     GPIO.cleanup()  # Reset the GPIO pins to their default state
     return "GPIO cleanup done."  # Confirmation message
 
+def send_email_trigger(temperature):
+    recipient = 'santisinsight@gmail.com'
+
+    # Run send_email in a separate thread
+    email_thread = Thread(target=send_email, args=(recipient, temperature))
+    email_thread.start()
+
+    # Immediately return a response while the email is being sent
+    return jsonify({'message': 'Email is being sent.'}), 202
+
+def test_receive_email():
+    print("Receive email method is being called from app.py")
+    print(receive_email())
+
 # Replace with your Raspberry Pi's IP address if necessary
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)  # Run the Flask application
+    app.run(host='0.0.0.0', port=8000, debug=True)  # Run the Flask application
+ 
