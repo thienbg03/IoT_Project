@@ -28,7 +28,7 @@ def index():
 
 @app.route('/toggle_led', methods=['POST'])
 def toggle_led():
-    # """Toggle the LED state based on the request from the frontend."""
+    # """Toggle the LED state based on the request franiercollege-lea.omnivox.ca/cvir/dtrv/DepotTravail.aspx?idtravail=c14ad21d-1114-4082-a57e-f0a1fa64bd4d&Src=ListeTravaux&C=VAN&E=P&L=ANG&Ref=20241021221935&SID=d345299e-40fa-45cb-977f-a15ccc55f4a5&Info=M2gwUHJGVHpJNHZxcW95SjVuaGFCczFNNFduRWY0Y0FkRHhZT0tNNWlTSlV3dFcvbVNUYnR4czNsWEF0VkhqR2w5V21VR04xMmJGVWpDNVVVdDFXQ0tzTkVPdUdxWDhaNG56QmMwTWRHVldFVG9zcjVmN3ZFWkdOU2c3b1JOL1ZWeFYrTTU0eGtsaEVDY3hJNVJLdkduMGdBaEJWVnJiWWRyM3JhQnVwSlRRPQ__om the frontend."""
     global LED_STATE  # Use the global variable to keep track of the LED state
 
     # Get the state from the JSON request

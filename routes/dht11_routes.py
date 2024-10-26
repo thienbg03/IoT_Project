@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from modules.dht11_module import save_data
+from modules.dht11_service import save_data
 
 dht11_blueprint = Blueprint('dht11', __name__)
 

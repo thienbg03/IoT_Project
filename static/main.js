@@ -11,10 +11,6 @@ function toggleLED() {
         data: JSON.stringify({ state: isOn }),
         success: function (response) {
             document.getElementById('led-status').textContent = response.led_state;
-
-            // Optionally, update charts with new data from server response if available
-            updateTemperature(response.new_temperature_value || 24);  // Replace with actual temperature data
-            updateHumidity(response.new_humidity_value || 40);  // Replace with actual humidity data
         },
         error: function (error) {
             console.log('Error:', error);
@@ -41,11 +37,13 @@ function updateHumidity(value) {
     }
 }
 
+
 function displayTemp(){
   console.log("DDSD")
-  updateTemperature(21);
-  updateHumidity(52);
+  updateTemperature(Math.floor(Math.random()*100));
+  updateHumidity(Math.floor(Math.random()*100));
 }
+
 // On Page Load Create the Temperature and Humidity Charts
 document.addEventListener('DOMContentLoaded', function () {
   // Ensure all elements are loaded before initializing the charts
@@ -134,4 +132,8 @@ document.addEventListener('DOMContentLoaded', function () {
       temperatureChart = new ApexCharts(temperatureChartEl, temperatureChartOptions);
       temperatureChart.render();
   }
+
+
+  setInterval(displayTemp, 3000);
 });
+
