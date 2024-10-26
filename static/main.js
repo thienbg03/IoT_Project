@@ -23,6 +23,18 @@ function toggleLED() {
         : "../static/assets/img/icons/unicons/lightOff.jpg";
 }
 
+function toggleFan(){
+    var isOn = document.getElementById('fanStatus').innerHTML;
+    if(isOn == "OFF"){
+      document.getElementById('fanImg').src = "/static/assets/img/fan.gif";
+      document.getElementById('fanStatus').innerHTML = "ON";
+      document.getElementById('fanButton').innerHTML = "Turn Off";
+    }else{
+      document.getElementById('fanImg').src = "/static/assets/img/fan.jpg";
+      document.getElementById('fanStatus').innerHTML = "OFF";
+      document.getElementById('fanButton').innerHTML = "Turn On";
+    }
+}
 // Function to update the temperature chart value
 function updateTemperature(value) {
     if (temperatureChart) {

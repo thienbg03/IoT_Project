@@ -222,7 +222,7 @@
                 </div>
               </div>
 
-              <!-- Light and Number of Devices -->
+              <!-- Light-->
               <div class="col-lg-4 col-md-4 order-1">
                 <div class="row">
                   <div class="col-lg-6 col-md-1img/icons/unicons/lightOff.jpg2 col-6 mb-6">
@@ -244,6 +244,7 @@
                           Status:<p id="led-status">OFF</p>
                       </div>
                     </div>
+
                   </div>
                 </div>
               </div>
@@ -252,24 +253,48 @@
               <!-- Total Revenue -->
               <div class="col-12 col-xxl-8 order-2 order-md-3 order-xxl-2 mb-6">
                 <div class="card">
-                    <div class="row row-bordered g-0">
-                        <div class="col-lg-">
-                            <div class="card-header d-flex align-items-center justify-content-between">
-                                <div class="card-title mb-0">
-                                    <h5 class="m-0 me-2">Temperature and Humidity</h5>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6"> <!-- Adjust this to your desired width -->
-                                    <div id="temperatureChart" style="height: 240px;"></div>
-                                </div>
-                                <div class="col-6"> <!-- Adjust this to your desired width -->
-                                    <div id="growthChart" style="height: 240px;"></div>
-                                </div>
-                            </div>
+                  <div class="row row-bordered g-0">
+                    <!-- Temperature Chart -->
+                    <div class="col-4"> <!-- Adjust width as needed -->
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="card-title mb-0">
+                          <h5 class="m-0 me-2">Temperature</h5>
                         </div>
+                      </div>
+                      <div id="temperatureChart" style="height: 240px;"></div>
                     </div>
+
+                    <!-- Humidity Chart -->
+                    <div class="col-4"> <!-- Adjust width as needed -->
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="card-title mb-0">
+                          <h5 class="m-0 me-2">Humidity</h5>
+                        </div>
+                      </div>
+                      <div id="growthChart" style="height: 240px;"></div>
+                    </div>
+
+                    <div class="col-4"> <!-- Adjust width as needed -->
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="card-title mb-0">
+                          <h5 class="m-0 me-2">Fan</h5>
+                        </div>
+                      </div>
+                      <div style="height: 260px;">
+                        <img src="../static/assets/img/fan.jpg" class="rounded" width="100%" height="auto" id="fanImg"/>
+                        <div class="text-center">
+                          <button class="btn btn-outline-primary" id="fanButton" onclick="toggleFan()">Turn On</button>
+                          Status: <span id="fanStatus">OFF</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+
+
+
             </div>
 
               <!-- Second Row -->
