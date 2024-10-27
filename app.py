@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import RPi.GPIO as GPIO
-from routes.dht11_routes import dht11_blueprint
+# from routes.dht11_routes import dht11_blueprint
 from modules.email import send_email, receive_email # Import the send_email function
 from threading import Thread
 
@@ -8,7 +8,7 @@ from threading import Thread
 # Initialize the Flask application
 app = Flask(__name__)
 
-app.register_blueprint(dht11_blueprint)
+# app.register_blueprint(dht11_blueprint)
 
 # Set up GPIO
 led_pin = 17  # Define the GPIO pin number for the LED
