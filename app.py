@@ -1,23 +1,29 @@
 from flask import Flask, render_template, request, jsonify
 import RPi.GPIO as GPIO
-# from routes.dht11_routes import dht11_blueprint
+from routes.dht11_routes import dht11_blueprint
 from modules.email import send_email, receive_email # Import the send_email function
 from threading import Thread
+from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
+
 
 
 # Initialize the Flask application
 app = Flask(__name__)
 
-# app.register_blueprint(dht11_blueprint)
+app.register_blueprint(dht11_blueprint)
 
 # Set up GPIO
 led_pin = 17  # Define the GPIO pin number for the LED
+DHT_PIN = 17
 GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
 GPIO.setup(led_pin, GPIO.OUT)  # Set the pin as an output
 GPIO.output(led_pin, GPIO.LOW)  # Start with the LED turned off
 
 # Initial LED state
 LED_STATE = 'OFF'  # Variable to track the current state of the LED
+
+# Initialize the DHT11 sensor
+sensor = DHT11Sensor(DHT_PIN)
 
 @app.route('/')
 def index():
@@ -49,6 +55,12 @@ def cleanup():
     """Clean up the GPIO pins. It doesn't work for some reason"""
     GPIO.cleanup()  # Reset the GPIO pins to their default state
     return "GPIO cleanup done."  # Confirmation message
+
+@app.route('/sensor_data', methods=['GET'])
+def get_sensor_data():
+    # Retrieve temperature and humidity from the DHT11 sensor
+    temperature, humidity = sensor.read_data()
+    return jsonify({'temperature': temperature, 'humidity': humidity})
 
 def send_email_trigger(temperature):
     recipient = 'santisinsight@gmail.com'

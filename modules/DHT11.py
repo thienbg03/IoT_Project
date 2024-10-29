@@ -1,27 +1,27 @@
 from Freenove_DHT11 import DHT
-import time
 import RPi.GPIO as GPIO
-DHTPin = 17 #define the pin of DHT11
+import time
 
-def loop():
-    dht = DHT.DHT(DHTPin) #create a DHT class object
-    counts = 0 # Measurement counts
-    while(True):
-        counts += 1
-        print("Measurement counts: ", counts)
-        for i in range(0,15):
-            chk = dht.readDHT11() #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
-            if (chk is dht.DHTLIB_OK): #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
-                print("DHT11,OK!")
-                break
+DHTPin = 17  # Define the pin of DHT11
+
+class DHT11Sensor:
+    def __init__(self, pin):
+        self.dht = DHT.DHT(pin)
+    
+    def read_data(self):
+        for i in range(15):  # Try reading up to 15 times to ensure data is correct
+            chk = self.dht.readDHT11()
+            if chk == self.dht.DHTLIB_OK:
+                return self.dht.temperature, self.dht.humidity
             time.sleep(0.1)
-        print("Humidity : %.2f, \t Temperature : %.2f \n"%(dht.humidity,dht.temperature))
-        time.sleep(2)
+        return None, None  # Return None if no valid reading
 
 if __name__ == '__main__':
-    print ('Program is starting ... ')
+    sensor = DHT11Sensor(DHTPin)
     try:
-        loop()
+        while True:
+            temperature, humidity = sensor.read_data()
+            print(f"Temperature: {temperature}°C, Humidity: {humidity}%")
+            time.sleep(2)
     except KeyboardInterrupt:
         GPIO.cleanup()
-        exit()
