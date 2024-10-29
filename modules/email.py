@@ -3,19 +3,19 @@ import email
 import imaplib
 import smtplib
 
-sender_email = 'santisinsight@gmail.com'  
-sender_password = 'dtgu jzjx qlwk oopn'   
+sender_email = 'santisinsight@gmail.com'
+sender_password = 'dtgu jzjx qlwk oopn'
 server = 'imap.gmail.com'
 
 def send_email(recipient_email, temperature):
     subject='Temperature Warning'
     body = f'The current temperature is {temperature}. Would you like to turn on the fan? Reply "YES" if you would like to turn on the fan.'
-    
+
     try:
         # Email configuration
         smtp_server = 'smtp.gmail.com'
         smtp_port = 465
-        
+
         # Email content
         message = f'Subject: {subject}\n\n{body}'
 
@@ -37,7 +37,7 @@ def receive_email():
     mail = imaplib.IMAP4_SSL(server)
     mail.login(sender_email, sender_password)
     mail.select('inbox')
-    
+
     # Search for unread emails
     status, data = mail.search(None, 'UNSEEN')
     mail_ids = data[0].split()
@@ -69,5 +69,5 @@ def receive_email():
 
                 if "yes" in mail_content.lower():
                     return True
-                
+
     return False
