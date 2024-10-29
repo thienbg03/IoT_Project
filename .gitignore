@@ -67,3 +67,6 @@ gulpfile.tmp.*
 
 # Package Lock files
 /package-lock.json
+
+*.pyc
+__pycache__/
