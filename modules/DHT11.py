@@ -1,4 +1,4 @@
-from Freenove_DHT11 import DHT
+from .Freenove_DHT11 import DHT
 import RPi.GPIO as GPIO
 import time
 
