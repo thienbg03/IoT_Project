@@ -10,11 +10,13 @@ from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
 # Initialize the Flask application
 app = Flask(__name__)
 
-app.register_blueprint(dht11_blueprint)
+# simulation with fake data to see if the saving works:
+# app.register_blueprint(dht11_blueprint)
 
 # Set up GPIO
 led_pin = 17  # Define the GPIO pin number for the LED
 DHT_PIN = 17
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
 GPIO.setup(led_pin, GPIO.OUT)  # Set the pin as an output
 GPIO.output(led_pin, GPIO.LOW)  # Start with the LED turned off
@@ -60,7 +62,11 @@ def cleanup():
 def get_sensor_data():
     # Retrieve temperature and humidity from the DHT11 sensor
     temperature, humidity = sensor.read_data()
-    return jsonify({'temperature': temperature, 'humidity': humidity})
+    if temperature is not None and humidity is not None:
+        sensor.save_data(temperature, humidity)  # Save the data to JSON
+        return jsonify({'temperature': temperature, 'humidity': humidity})
+    else:
+        return jsonify({'error': 'Failed to read data from DHT11 sensor.'}), 500
 
 def send_email_trigger(temperature):
     recipient = 'santisinsight@gmail.com'
