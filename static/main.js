@@ -26,10 +26,9 @@ function toggleLED() {
 }
 
 function displayTemp() {
-  fetch('/sensor_data.json')
+    fetch('/static/sensor_data.json')
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       // Assuming data contains the JSON structure shown above
       updateTemperature(data.temperature);
       updateHumidity(data.humidity);
