@@ -1,9 +1,10 @@
+
 // Declare global variables for chart instances
 let temperatureChart, growthChart;
 // Function to toggle the LED state based on the switch
 function toggleLED() {
     const isOn = document.getElementById('led-switch').checked ? 'ON' : 'OFF';
-
+    //console.log(data);
     $.ajax({
         url: '/toggle_led',
         type: 'POST',
@@ -16,12 +17,26 @@ function toggleLED() {
             console.log('Error:', error);
         }
     });
-
     // Update light bulb image based on LED state
     document.getElementById('light-img').src = isOn === "ON"
         ? "../static/assets/img/icons/unicons/lightOn.jpg"
         : "../static/assets/img/icons/unicons/lightOff.jpg";
+
+
 }
+
+function displayTemp() {
+  fetch('/sensor_data.json')
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      // Assuming data contains the JSON structure shown above
+      updateTemperature(data.temperature);
+      updateHumidity(data.humidity);
+    })
+    .catch((error) => console.error("Error fetching sensor data:", error));
+}
+
 
 function toggleFan(){
     var isOn = document.getElementById('fanStatus').innerHTML;
@@ -50,11 +65,7 @@ function updateHumidity(value) {
 }
 
 
-function displayTemp(){
-  console.log("DDSD")
-  updateTemperature(Math.floor(Math.random()*100));
-  updateHumidity(Math.floor(Math.random()*100));
-}
+
 
 // On Page Load Create the Temperature and Humidity Charts
 document.addEventListener('DOMContentLoaded', function () {
@@ -144,8 +155,8 @@ document.addEventListener('DOMContentLoaded', function () {
       temperatureChart = new ApexCharts(temperatureChartEl, temperatureChartOptions);
       temperatureChart.render();
   }
+  displayTemp();
 
-
-  setInterval(displayTemp, 3000);
+  setInterval(displayTemp, 5000);
 });
 

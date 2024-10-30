@@ -83,7 +83,7 @@ def send_email_trigger(temperature):
 
 def test_receive_email():
     print("Receive email method is being called from app.py")
-    
+
     def receive_and_check():
         result = receive_email()
         if result:  # Only call turn_on_fan if the email is received successfully
