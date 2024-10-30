@@ -10,7 +10,7 @@
 
    <!-- Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com" />
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
    <link
      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
      rel="stylesheet" />
@@ -36,24 +36,9 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
    <!-- jQuery for AJAX functionality -->
    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-   <script src="{{ url_for('static', filename='main.js') }}"></script>
+   <script src="/static/main.js"></script>
+   <!-- <script src="{{ url_for('static', filename='main.js') }}"></script> -->
 </head>
-
-   <!-- <div class="container-fluid">
-      <div class="row">
-         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-            <h1 class="text-center">LED Control</h1>
-            <div class="text-center">
-               
-               Lightbulb representation
-               <div id="lightbulb" class="lightbulb {% if led_state == 'OFF' %} lightbulb-off {% endif %}"></div>
-               <br>
-               Button for GPIO cleanup
-               <button class="btn btn-danger mt-4" onclick="cleanupGPIO()">Cleanup GPIO</button>
-            </div>
-         </main>
-      </div>
-   </div> -->
 
 <body>
   <!-- Layout wrapper -->
@@ -237,7 +222,7 @@
                 </div>
               </div>
 
-              <!-- Light and Number of Devices -->
+              <!-- Light-->
               <div class="col-lg-4 col-md-4 order-1">
                 <div class="row">
                   <div class="col-lg-6 col-md-1img/icons/unicons/lightOff.jpg2 col-6 mb-6">
@@ -251,112 +236,67 @@
                               class="rounded" />
                           </div>
                         </div>
-                        <p class="mb-1">Light</p>                      
+                        <p class="mb-1">Light</p>
                           <img src="../static/assets/img/icons/unicons/lightOff.jpg" alt="Light Icon" class="rounded" width="100%" height="50%" id="light-img"/>
-                          LED switch 
+                          LED switch
                           <input type="checkbox" id="led-switch" onclick="toggleLED()">
                           <br>
-                          Status:<p id="led-status">OFF</p>                                         
+                          Status:<p id="led-status">OFF</p>
                       </div>
                     </div>
+
                   </div>
                 </div>
               </div>
 
               <!-- Second Row -->
               <!-- Total Revenue -->
-              <!-- <div class="col-12 col-xxl-8 order-2 order-md-3 order-xxl-2 mb-6">
+              <div class="col-12 col-xxl-8 order-2 order-md-3 order-xxl-2 mb-6">
                 <div class="card">
                   <div class="row row-bordered g-0">
-                    <div class="col-lg-8">
+                    <!-- Temperature Chart -->
+                    <div class="col-4"> <!-- Adjust width as needed -->
                       <div class="card-header d-flex align-items-center justify-content-between">
                         <div class="card-title mb-0">
-                          <h5 class="m-0 me-2">Total Revenue</h5>
-                        </div>
-                        <div class="dropdown">
-                          <button
-                            class="btn p-0"
-                            type="button"
-                            id="totalRevenue"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false">
-                            <i class="bx bx-dots-vertical-rounded bx-lg text-muted"></i>
-                          </button>
-                          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="totalRevenue">
-                            <a class="dropdown-item" href="javascript:void(0);">Select All</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Share</a>
-                          </div>
+                          <h5 class="m-0 me-2">Temperature</h5>
                         </div>
                       </div>
-                      <div id="totalRevenueChart" class="px-3"></div>
+                      <div id="temperatureChart" style="height: 240px;"></div>
                     </div>
-                    <div class="col-lg-4 d-flex align-items-center">
-                      <div class="card-body px-xl-9">
-                        <div class="text-center mb-6">
-                          <div class="btn-group">
-                            <button type="button" class="btn btn-outline-primary">
-                              <script>
-                                document.write(new Date().getFullYear() - 1);
-                              </script>
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false">
-                              <span class="visually-hidden">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu">
-                              <li><a class="dropdown-item" href="javascript:void(0);">2021</a></li>
-                              <li><a class="dropdown-item" href="javascript:void(0);">2020</a></li>
-                              <li><a class="dropdown-item" href="javascript:void(0);">2019</a></li>
-                            </ul>
-                          </div>
+
+                    <!-- Humidity Chart -->
+                    <div class="col-4"> <!-- Adjust width as needed -->
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="card-title mb-0">
+                          <h5 class="m-0 me-2">Humidity</h5>
                         </div>
+                      </div>
+                      <div id="growthChart" style="height: 240px;"></div>
+                    </div>
 
-                        <div id="growthChart"></div>
-                        <div class="text-center fw-medium my-6">62% Company Growth</div>
-
-                        <div class="d-flex gap-3 justify-content-between">
-                          <div class="d-flex">
-                            <div class="avatar me-2">
-                              <span class="avatar-initial rounded-2 bg-label-primary"
-                                ><i class="bx bx-dollar bx-lg text-primary"></i
-                              ></span>
-                            </div>
-                            <div class="d-flex flex-column">
-                              <small>
-                                <script>
-                                  document.write(new Date().getFullYear() - 1);
-                                </script>
-                              </small>
-                              <h6 class="mb-0">$32.5k</h6>
-                            </div>
-                          </div>
-                          <div class="d-flex">
-                            <div class="avatar me-2">
-                              <span class="avatar-initial rounded-2 bg-label-info"
-                                ><i class="bx bx-wallet bx-lg text-info"></i
-                              ></span>
-                            </div>
-                            <div class="d-flex flex-column">
-                              <small>
-                                <script>
-                                  document.write(new Date().getFullYear() - 2);
-                                </script>
-                              </small>
-                              <h6 class="mb-0">$41.2k</h6>
-                            </div>
-                          </div>
+                    <div class="col-4"> <!-- Adjust width as needed -->
+                      <div class="card-header d-flex align-items-center justify-content-between">
+                        <div class="card-title mb-0">
+                          <h5 class="m-0 me-2">Fan</h5>
+                        </div>
+                      </div>
+                      <div style="height: 260px;">
+                        <img src="../static/assets/img/fan.jpg" class="rounded" width="100%" height="auto" id="fanImg"/>
+                        <div class="text-center">
+                          <button class="btn btn-outline-primary" id="fanButton" onclick="toggleFan()">Turn On</button>
+                          Status: <span id="fanStatus">OFF</span>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-               -->
+
+
+
+
+            </div>
+
               <!-- Second Row -->
             </div>
             <!-- Bottom 2 Cards -->
@@ -559,7 +499,16 @@
 
   <!-- Page JS -->
   <script src="../static/assets/js/dashboards-analytics.js"></script>
+  <script>
 
+  function updateTemperature(value) {
+    console.log(value);
+    temperatureChart.updateSeries([value]);
+}
+
+
+
+  </script>
   <!-- Place this tag before closing body tag for github widget button. -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>

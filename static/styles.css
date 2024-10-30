@@ -115,3 +115,9 @@ input:checked+.slider:before {
     box-shadow: none;
     /* No glow effect when OFF */
 }
+
+#chart-container {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}

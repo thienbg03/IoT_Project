@@ -9,7 +9,7 @@ def save_data(temp, hum):
         "humidity": hum
     }
 
-    with open('sensor_data.json', 'w+') as f:  
+    with open('../static/sensor_data.json', 'w+') as f:  
         f.seek(0)      
         f.truncate()   
         json.dump(data, f, indent=4)  
