@@ -31,7 +31,7 @@ sensor = DHT11Sensor(DHT_PIN)
 @app.route('/')
 def index():
     # """Render the main dashboard with the current LED state."""
-    test_receive_email()
+    # test_receive_email()
     return render_template('index.html', led_state=LED_STATE)
 
 @app.route('/toggle_led', methods=['POST'])

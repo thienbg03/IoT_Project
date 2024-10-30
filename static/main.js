@@ -26,14 +26,22 @@ function toggleLED() {
 }
 
 function displayTemp() {
-    fetch('/static/sensor_data.json')
-    .then((response) => response.json())
-    .then((data) => {
-      // Assuming data contains the JSON structure shown above
-      updateTemperature(data.temperature);
-      updateHumidity(data.humidity);
-    })
-    .catch((error) => console.error("Error fetching sensor data:", error));
+    fetch('/sensor_data')
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.error) {
+                console.error('Error:', data.error);
+            } else {
+                updateTemperature(data.temperature);
+                updateHumidity(data.humidity);
+            }
+        })
+        .catch((error) => console.error("Error fetching sensor data:", error));
 }
 
 

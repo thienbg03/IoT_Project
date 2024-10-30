@@ -13,6 +13,7 @@ class DHT11Sensor:
         for i in range(15):  # Try reading up to 15 times to ensure data is correct
             chk = self.dht.readDHT11()
             if chk == self.dht.DHTLIB_OK:
+                
                 return self.dht.temperature, self.dht.humidity
             time.sleep(0.1)
         return None, None  # Return None if no valid reading
@@ -24,7 +25,7 @@ class DHT11Sensor:
             "humidity": hum
         }
 
-        with open('sensor_data.json', 'w+') as f:  
+        with open('static/sensor_data.json', 'w+') as f:  
             f.seek(0)      
             f.truncate()   
             json.dump(data, f, indent=4)  
@@ -37,6 +38,7 @@ if __name__ == '__main__':
         while True:
             temperature, humidity = sensor.read_data()
             if temperature is not None and humidity is not None:
+                print(temperature)
                 sensor.save_data(temperature, humidity)
             else:
                 print("Failed to read data from DHT11 sensor.")
