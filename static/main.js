@@ -37,6 +37,7 @@ function displayTemp() {
             if (data.error) {
                 console.error('Error:', data.error);
             } else {
+                console.log(data);
                 updateTemperature(data.temperature);
                 updateHumidity(data.humidity);
             }
@@ -44,18 +45,62 @@ function displayTemp() {
         .catch((error) => console.error("Error fetching sensor data:", error));
 }
 
+function updateFanUI(isFanOn){
+
+    let fan_status = isFanOn
+    console.log(isFanOn);
+    console.log(fan_status);
+
+    if (fan_status == null) {
+        fetch('/return_status')
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.error) {
+                console.error('Error:', data.error);
+            } else {
+                console.log(data);
+                fan_status = data.fan_state
+            }
+        })
+        .catch((error) => console.error("Error fetching sensor data:", error));
+    }
+
+    // Update light bulb image based on LED state
+    document.getElementById('fanImg').src = isFanOn === "ON"
+    ? "/static/assets/img/fan.jpg"
+    : "/static/assets/img/fan.gif";
+
+    if(isFanOn == "ON"){
+    document.getElementById('fanStatus').innerHTML = "ON";
+    document.getElementById('fanButton').innerHTML = "Turn Off";
+    }else{
+    document.getElementById('fanStatus').innerHTML = "OFF";
+    document.getElementById('fanButton').innerHTML = "Turn On";
+    }
+}
 
 function toggleFan(){
-    var isOn = document.getElementById('fanStatus').innerHTML;
-    if(isOn == "OFF"){
-      document.getElementById('fanImg').src = "/static/assets/img/fan.gif";
-      document.getElementById('fanStatus').innerHTML = "ON";
-      document.getElementById('fanButton').innerHTML = "Turn Off";
-    }else{
-      document.getElementById('fanImg').src = "/static/assets/img/fan.jpg";
-      document.getElementById('fanStatus').innerHTML = "OFF";
-      document.getElementById('fanButton').innerHTML = "Turn On";
-    }
+    var isFanOn = document.getElementById('fanStatus').innerHTML;
+
+    $.ajax({
+        url: '/toggle_fan',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ state: isFanOn }),
+        success: function (response) {
+            document.getElementById('fanStatus').innerHTML = response.fan_state;
+        },
+        error: function (error) {
+            console.log('Error:', error);
+        }
+    });   
+    
+    updateFanUI(isFanOn);
 }
 // Function to update the temperature chart value
 function updateTemperature(value) {
@@ -163,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
       temperatureChart.render();
   }
   displayTemp();
-
-  setInterval(displayTemp, 5000);
+  setInterval(displayTemp, 30000);
+  //setInterval(updateFanUI, 2000);
 });
 

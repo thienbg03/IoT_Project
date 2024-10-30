@@ -5,6 +5,7 @@ from modules.email import send_email, receive_email # Import the email functions
 from modules.fan import turn_on_fan, turn_off_fan
 from threading import Thread
 from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
+from time import sleep
 
 from threading import Thread
 
@@ -15,7 +16,7 @@ app = Flask(__name__)
 # app.register_blueprint(dht11_blueprint)
 
 # Set up GPIO
-led_pin = 17  # Define the GPIO pin number for the LED
+led_pin = 16  # Define the GPIO pin number for the LED
 DHT_PIN = 18
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
@@ -24,6 +25,7 @@ GPIO.output(led_pin, GPIO.LOW)  # Start with the LED turned off
 
 # Initial LED state
 LED_STATE = 'OFF'  # Variable to track the current state of the LED
+FAN_STATE = 'OFF'
 
 # Initialize the DHT11 sensor
 sensor = DHT11Sensor(DHT_PIN)
@@ -62,14 +64,36 @@ def cleanup():
 def get_sensor_data():
     # Retrieve temperature and humidity from the DHT11 sensor
     temperature, humidity = sensor.read_data()
-    temperature = 25
     if temperature is not None and humidity is not None:
         sensor.save_data(temperature, humidity)  # Save the data to JSON
-        if temperature > 24:
+        if temperature > 22:
             send_email_trigger(temperature)
         return jsonify({'temperature': temperature, 'humidity': humidity})
     else:
         return jsonify({'error': 'Failed to read data from DHT11 sensor.'}), 500
+
+@app.route('/toggle_fan', methods=['POST'])
+def toggle_fan():
+    # """Toggle the LED state based on the request from the frontend."""
+    global FAN_STATE  # Use the global variable to keep track of the LED state
+
+    # Get the state from the JSON request
+    data = request.get_json()
+    print(data['state'])
+    if data['state'] == 'OFF':
+        turn_on_fan()
+        FAN_STATE = 'ON'
+    else:
+        turn_off_fan()
+        FAN_STATE = 'OFF'  # Update the state variable
+
+    # Return the current LED state as JSON
+    return jsonify({'fan_state': FAN_STATE})
+
+@app.route('/return_status', methods=['GET'])
+def return_status():
+    global LED_STATE, FAN_STATE
+    return jsonify({'led_state': LED_STATE, 'fan_state': FAN_STATE})
 
 def send_email_trigger(temperature):
     recipient = 'santisinsight@gmail.com'
@@ -78,8 +102,12 @@ def send_email_trigger(temperature):
     email_thread = Thread(target=send_email, args=(recipient, temperature))
     email_thread.start()
 
+    for _ in range(5):
+        test_receive_email()
+        sleep(5)
     # Immediately return a response while the email is being sent
     return jsonify({'message': 'Email is being sent.'}), 202
+
 
 def test_receive_email():
     print("Receive email method is being called from app.py")

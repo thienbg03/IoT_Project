@@ -9,7 +9,7 @@ server = 'imap.gmail.com'
 
 def send_email(recipient_email, temperature):
     subject='Temperature Warning'
-    body = f'The current temperature is {temperature}. Would you like to turn on the fan? Reply "YES" if you would like to turn on the fan.'
+    body = f'The current temperature is {temperature}. Would you like to turn on the fan?'
 
     try:
         # Email configuration

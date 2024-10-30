@@ -20,7 +20,6 @@ def turn_off_fan():
     GPIO.output(Motor1, GPIO.LOW)
     GPIO.output(Motor2, GPIO.LOW)
     GPIO.output(Motor3, GPIO.LOW)
-    GPIO.cleanup()
     print("Turning off fan")
 
 def turn_on_fan():
@@ -43,6 +42,4 @@ def turn_on_fan():
     GPIO.output(Motor2, GPIO.LOW)
     GPIO.output(Motor3, GPIO.HIGH)
     print("Turning on fan")
-    sleep(3)
-    turn_off_fan()
 
