@@ -21,8 +21,6 @@ function toggleLED() {
     document.getElementById('light-img').src = isOn === "ON"
         ? "../static/assets/img/icons/unicons/lightOn.jpg"
         : "../static/assets/img/icons/unicons/lightOff.jpg";
-
-
 }
 
 function displayTemp() {
