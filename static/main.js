@@ -48,8 +48,6 @@ function displayTemp() {
 function updateFanUI(isFanOn){
 
     let fan_status = isFanOn
-    console.log(isFanOn);
-    console.log(fan_status);
 
     if (fan_status == null) {
         fetch('/return_status')
@@ -70,23 +68,20 @@ function updateFanUI(isFanOn){
         .catch((error) => console.error("Error fetching sensor data:", error));
     }
 
-    // Update light bulb image based on LED state
-    document.getElementById('fanImg').src = isFanOn === "ON"
-    ? "/static/assets/img/fan.jpg"
-    : "/static/assets/img/fan.gif";
 
-    if(isFanOn == "ON"){
+    if(isFanOn == "OFF" || fan_status == "ON"){
     document.getElementById('fanStatus').innerHTML = "ON";
     document.getElementById('fanButton').innerHTML = "Turn Off";
+    document.getElementById('fanImg').src = "/static/assets/img/fan.gif";
     }else{
     document.getElementById('fanStatus').innerHTML = "OFF";
     document.getElementById('fanButton').innerHTML = "Turn On";
+    document.getElementById('fanImg').src = "/static/assets/img/fan.jpg";
     }
 }
 
 function toggleFan(){
     var isFanOn = document.getElementById('fanStatus').innerHTML;
-
     $.ajax({
         url: '/toggle_fan',
         type: 'POST',
@@ -98,8 +93,8 @@ function toggleFan(){
         error: function (error) {
             console.log('Error:', error);
         }
-    });   
-    
+    });
+
     updateFanUI(isFanOn);
 }
 // Function to update the temperature chart value
