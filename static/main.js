@@ -35,7 +35,6 @@ function displayTemp() {
             if (data.error) {
                 console.error('Error:', data.error);
             } else {
-                console.log(data);
                 updateTemperature(data.temperature);
                 updateHumidity(data.humidity);
             }
@@ -43,12 +42,8 @@ function displayTemp() {
         .catch((error) => console.error("Error fetching sensor data:", error));
 }
 
-function updateFanUI(isFanOn){
-
-    let fan_status = isFanOn
-
-    if (fan_status == null) {
-        fetch('/return_status')
+function updateFanUI(){
+    fetch('/return_status')
         .then((response) => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -59,23 +54,20 @@ function updateFanUI(isFanOn){
             if (data.error) {
                 console.error('Error:', data.error);
             } else {
-                console.log(data);
-                fan_status = data.fan_state
+                let fan_status = data.fan_state
+                console.log("FAN: " + fan_status);
+                if(fan_status == "ON"){
+                    document.getElementById('fanStatus').innerHTML = "ON";
+                    document.getElementById('fanButton').innerHTML = "Turn Off";
+                    document.getElementById('fanImg').src = "/static/assets/img/fan.gif";
+                    }else{
+                    document.getElementById('fanStatus').innerHTML = "OFF";
+                    document.getElementById('fanButton').innerHTML = "Turn On";
+                    document.getElementById('fanImg').src = "/static/assets/img/fan.jpg";
+                }
             }
         })
         .catch((error) => console.error("Error fetching sensor data:", error));
-    }
-
-
-    if(isFanOn == "OFF" || fan_status == "ON"){
-    document.getElementById('fanStatus').innerHTML = "ON";
-    document.getElementById('fanButton').innerHTML = "Turn Off";
-    document.getElementById('fanImg').src = "/static/assets/img/fan.gif";
-    }else{
-    document.getElementById('fanStatus').innerHTML = "OFF";
-    document.getElementById('fanButton').innerHTML = "Turn On";
-    document.getElementById('fanImg').src = "/static/assets/img/fan.jpg";
-    }
 }
 
 function toggleFan(){
@@ -92,8 +84,7 @@ function toggleFan(){
             console.log('Error:', error);
         }
     });
-
-    updateFanUI(isFanOn);
+    updateFanUI();
 }
 // Function to update the temperature chart value
 function updateTemperature(value) {
@@ -201,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
       temperatureChart.render();
   }
   displayTemp();
-  setInterval(displayTemp, 30000);
-  //setInterval(updateFanUI, 2000);
+  setInterval(displayTemp, 1000);
+  setInterval(updateFanUI, 1000);
 });
 
