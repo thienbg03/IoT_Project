@@ -7,40 +7,37 @@ from threading import Thread
 from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
 from time import sleep
 
-from threading import Thread
-
 # Initialize the Flask application
 app = Flask(__name__)
 
 # simulation with fake data to see if the saving works:
 # app.register_blueprint(dht11_blueprint)
-
 # Set up GPIO
 led_pin = 16  # Define the GPIO pin number for the LED
 DHT_PIN = 18
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)  # Use BCM pin numbering
-GPIO.setup(led_pin, GPIO.OUT)  # Set the pin as an output
-GPIO.output(led_pin, GPIO.LOW)  # Start with the LED turned off
-
-# Initial LED state
-LED_STATE = 'OFF'  # Variable to track the current state of the LED
+# Start with the LED turned off
+# Initialize global states
+LED_STATE = 'OFF'
 FAN_STATE = 'OFF'
-
-# Initialize the DHT11 sensor
+# Initial LED statesudo apt-get install python3-rpi.gpio 
 sensor = DHT11Sensor(DHT_PIN)
 
 @app.route('/')
 def index():
     # """Render the main dashboard with the current LED state."""
     # test_receive_email()
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
+
+    # Use BCM pin numbering
+    GPIO.setup(led_pin, GPIO.OUT)  # Set the pin as an output
+    GPIO.output(led_pin, GPIO.LOW) 
     return render_template('index.html', led_state=LED_STATE)
 
 @app.route('/toggle_led', methods=['POST'])
 def toggle_led():
     # """Toggle the LED state based on the request from the frontend."""
     global LED_STATE  # Use the global variable to keep track of the LED state
-
     # Get the state from the JSON request
     data = request.get_json()
     print(data['state'])
@@ -66,7 +63,7 @@ def get_sensor_data():
     temperature, humidity = sensor.read_data()
     if temperature is not None and humidity is not None:
         sensor.save_data(temperature, humidity)  # Save the data to JSON
-        if temperature > 22:
+        if temperature > 24:
             send_email_trigger(temperature)
         return jsonify({'temperature': temperature, 'humidity': humidity})
     else:
@@ -81,10 +78,10 @@ def toggle_fan():
     data = request.get_json()
     print(data['state'])
     if data['state'] == 'OFF':
-        turn_on_fan()
+        #turn_on_fan()
         FAN_STATE = 'ON'
     else:
-        turn_off_fan()
+        #turn_off_fan()
         FAN_STATE = 'OFF'  # Update the state variable
 
     # Return the current LED state as JSON
@@ -96,8 +93,7 @@ def return_status():
     return jsonify({'led_state': LED_STATE, 'fan_state': FAN_STATE})
 
 def send_email_trigger(temperature):
-    recipient = 'santisinsight@gmail.com'
-
+    recipient = 'potjackson19@gmail.com'
     # Run send_email in a separate thread
     email_thread = Thread(target=send_email, args=(recipient, temperature))
     email_thread.start()
@@ -120,10 +116,14 @@ def test_receive_email():
     email_thread = Thread(target=receive_and_check)
     email_thread.start()
     email_thread.join(5)  # Wait for 10 seconds
-
     if email_thread.is_alive():
         print("Function timed out after 5 seconds")
 
 # Replace with your Raspberry Pi's IP address if necessary
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)  # Run the Flask application
+    try:
+        app.run(host='0.0.0.0', port=8000, debug=True)  # Run the Flask application
+    finally:
+        GPIO.cleanup()  # Ensures cleanup when the app stops # Run the Flask application
+
+
