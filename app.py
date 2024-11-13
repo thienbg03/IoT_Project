@@ -4,7 +4,7 @@ from routes.dht11_routes import dht11_blueprint
 from modules.email import send_email, receive_email # Import the send_email function
 from threading import Thread
 from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
-
+# from modules.mqtt_subscriber import email_notifier
 
 
 # Initialize the Flask application
@@ -81,6 +81,8 @@ def send_email_trigger(temperature):
 def test_receive_email():
     print("Receive email method is being called from app.py")
     print(receive_email())
+
+
 
 # Replace with your Raspberry Pi's IP address if necessary
 if __name__ == '__main__':
