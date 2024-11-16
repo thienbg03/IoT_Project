@@ -1,6 +1,8 @@
 
 // Declare global variables for chart instances
-let temperatureChart, growthChart;
+let temperatureChart, growthChart, lightIntensityChart;
+let intensityArray = [100, 200, 300, 350, 450, 460, 500];
+let timeArray = ['New2', 'New2', 'New3', 'New4', 'New5', 'New6', 'New7'];
 // Function to toggle the LED state based on the switch
 function toggleLED() {
     const isOn = document.getElementById('led-switch').checked ? 'ON' : 'OFF';
@@ -100,7 +102,22 @@ function updateHumidity(value) {
     }
 }
 
-
+function updateLightIntensity() {
+  const date = new Date();
+  const hour = date.getHours();
+  const min = date.getMinutes();
+  const time = hour + ":" + min;
+    if (lightIntensityChart){
+      lightIntensityChart.updateSeries([{
+        data: intensityArray
+      }]);
+      lightIntensityChart.updateOptions({
+        xaxis: {
+          categories: timeArray // New dynamic values
+        }
+      });
+    }
+}
 
 
 // On Page Load Create the Temperature and Humidity Charts
@@ -108,12 +125,14 @@ document.addEventListener('DOMContentLoaded', function () {
   // Ensure all elements are loaded before initializing the charts
   const temperatureChartEl = document.querySelector('#temperatureChart');
   const growthChartEl = document.querySelector('#growthChart');
-
+  const lightChartEl = document.querySelector('#lightChart');
   // Define chart options
   const cardColor = config.colors.cardColor;
   const headingColor = config.colors.headingColor;
   const legendColor = config.colors.bodyColor;
-
+  const shadeColor = config.colors.cardColor;
+  const borderColor = config.colors.borderColor;
+  const labelColor = config.colors.textMuted;
   // Growth Chart - Radial Bar Chart
   const growthChartOptions = {
       series: [40],
@@ -190,6 +209,103 @@ document.addEventListener('DOMContentLoaded', function () {
   if (temperatureChartEl) {
       temperatureChart = new ApexCharts(temperatureChartEl, temperatureChartOptions);
       temperatureChart.render();
+  }
+
+// Temperature Chart - Radial Bar Chart
+  const lightIntensityConfig = {
+      series: [
+        {
+          data: [21, 30, 22, 42, 26, 35, 29]
+        }
+      ],
+      chart: {
+        height: 232,
+        parentHeightOffset: 0,
+        parentWidthOffset: 0,
+        toolbar: {
+          show: false
+        },
+        type: 'area'
+      },
+      dataLabels: {
+        enabled: false
+      },
+      stroke: {
+        width: 3,
+        curve: 'smooth'
+      },
+      legend: {
+        show: false
+      },
+      markers: {
+        size: 6,
+        colors: 'transparent',
+        strokeColors: 'transparent',
+        strokeWidth: 4,
+        discrete: [
+          {
+            fillColor: config.colors.white,
+            seriesIndex: 0,
+            dataPointIndex: 6,
+            strokeColor: config.colors.primary,
+            strokeWidth: 2,
+            size: 6,
+            radius: 8
+          }
+        ],
+        hover: {
+          size: 7
+        }
+      },
+      colors: [config.colors.primary],
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: shadeColor,
+          shadeIntensity: 0.6,
+          opacityFrom: 0.5,
+          opacityTo: 0.25,
+          stops: [0, 95, 100]
+        }
+      },
+      grid: {
+        borderColor: borderColor,
+        strokeDashArray: 8,
+        padding: {
+          top: -20,
+          bottom: -8,
+          left: 0,
+          right: 8
+        }
+      },
+      xaxis: {
+        categories: ['oi', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'mate'],
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        },
+        labels: {
+          show: true,
+          style: {
+            fontSize: '13px',
+            colors: labelColor
+          }
+        }
+      },
+      yaxis: {
+        labels: {
+          show: true
+        },
+        min: 0,
+        max: 500,
+        tickAmount: 4
+      }
+    };
+  if (lightChartEl) {
+    lightIntensityChart = new ApexCharts(lightChartEl, lightIntensityConfig);
+    lightIntensityChart.render();
   }
   displayTemp();
   setInterval(displayTemp, 1000);
