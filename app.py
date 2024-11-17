@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 import RPi.GPIO as GPIO
 from routes.dht11_routes import dht11_blueprint
-from modules.email import send_email, receive_email # Import the email functions
 from modules.fan import turn_on_fan, turn_off_fan
-from threading import Thread
 from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
 from time import sleep
+from modules.email_temp import send_email, receive_email # Import the send_email function
+from threading import Thread
+# from modules.mqtt_subscriber import email_notifier
+
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -118,6 +120,8 @@ def test_receive_email():
     email_thread.join(5)  # Wait for 10 seconds
     if email_thread.is_alive():
         print("Function timed out after 5 seconds")
+
+
 
 # Replace with your Raspberry Pi's IP address if necessary
 if __name__ == '__main__':
