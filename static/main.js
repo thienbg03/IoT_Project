@@ -132,13 +132,16 @@ function updateLED(){
                 console.error('Error:', data.error);
             } else {
                 let led_status = data.led_state
+                let email_status = data.email_status
                 console.log("LED STATUS: " + led_status);
                 if(led_status == "ON"){
                     document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOn.jpg";
                     document.getElementById('led-status').textContent = led_status;
+                    document.getElementById('emailStatus').textContent = email_status;
                   }else{
                     document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOff.jpg";
                     document.getElementById('led-status').textContent = led_status;
+                    document.getElementById('emailStatus').textContent = email_status;
                 }
             }
         })
