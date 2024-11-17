@@ -1,8 +1,8 @@
 
 // Declare global variables for chart instances
 let temperatureChart, growthChart, lightIntensityChart;
-let intensityArray = [100, 200, 300, 350, 450, 460, 500];
-let timeArray = ['New2', 'New2', 'New3', 'New4', 'New5', 'New6', 'New7'];
+let intensityArray = [];
+let timeArray = [];
 // Function to toggle the LED state based on the switch
 function toggleLED() {
     const isOn = document.getElementById('led-switch').checked ? 'ON' : 'OFF';
@@ -103,21 +103,44 @@ function updateHumidity(value) {
 }
 
 function updateLightIntensity() {
-  const date = new Date();
-  const hour = date.getHours();
-  const min = date.getMinutes();
-  const time = hour + ":" + min;
-    if (lightIntensityChart){
-      lightIntensityChart.updateSeries([{
-        data: intensityArray
-      }]);
-      lightIntensityChart.updateOptions({
-        xaxis: {
-          categories: timeArray // New dynamic values
-        }
-      });
-    }
+  fetch('/get_light_data')  // Assuming /get_light_data returns a single light intensity value
+    .then((response) => response.json())  // Parse the JSON response
+    .then((data) => {
+      // Assuming data has the light intensity value in `data.intensity`
+      const newIntensityValue = data.light_intensity;
+
+      // Get the current time and format it as you need for the x-axis
+      const date = new Date();
+      const hour = date.getHours();
+      const min = date.getMinutes();
+      const time = `${hour}:${min}`;  // Example: '14:30'
+
+      // Add the new value to your existing intensity array
+      intensityArray.push(newIntensityValue);  // Add new intensity value
+      timeArray.push(time);  // Add new time value
+
+      // Optionally, if the array gets too large, remove the oldest data point to keep the chart manageable
+      if (intensityArray.length > 10) {  // Keep only the last 10 values
+        intensityArray.shift();  // Remove the oldest intensity value
+        timeArray.shift();  // Remove the oldest time value
+      }
+
+      // Update the chart with the new series and categories (time values)
+      if (lightIntensityChart) {
+        lightIntensityChart.updateSeries([{
+          data: intensityArray  // Update the data in the series
+        }]);
+
+        lightIntensityChart.updateOptions({
+          xaxis: {
+            categories: timeArray  // Update the x-axis with the new time values
+          }
+        });
+      }
+    })
+    .catch((error) => console.error("Error fetching light intensity data:", error));
 }
+
 
 function updateLED(){
   fetch('/return_status')
@@ -338,5 +361,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // displayTemp();
   // setInterval(displayTemp, 1000);
   // setInterval(updateFanUI, 1000);
+  setInterval(updateLightIntensity, 10000);
 });
 
