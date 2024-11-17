@@ -1,0 +1,130 @@
+[
+    {
+        "id": "4e29e09beb1f6a84",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3b1dd4fa11d82e26",
+        "type": "mqtt in",
+        "z": "4e29e09beb1f6a84",
+        "name": "",
+        "topic": "light/intensity",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "989d51ad39cf995c",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 310,
+        "y": 220,
+        "wires": [
+            [
+                "73cba5def53401d7",
+                "25f8106b13174b01"
+            ]
+        ]
+    },
+    {
+        "id": "59d9409ff9690a12",
+        "type": "inject",
+        "z": "4e29e09beb1f6a84",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"light_intensity\": 100}",
+        "payloadType": "json",
+        "x": 350,
+        "y": 320,
+        "wires": [
+            [
+                "73cba5def53401d7"
+            ]
+        ]
+    },
+    {
+        "id": "25f8106b13174b01",
+        "type": "debug",
+        "z": "4e29e09beb1f6a84",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "73cba5def53401d7",
+        "type": "http request",
+        "z": "4e29e09beb1f6a84",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://0.0.0.0:8000/api/light_intensity",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 630,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "989d51ad39cf995c",
+        "type": "mqtt-broker",
+        "name": "home",
+        "broker": "192.168.0.25",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]
