@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import RPi.GPIO as GPIO
 from routes.dht11_routes import dht11_blueprint
-from modules.email import send_email, receive_email # Import the send_email function
+from modules.email_temp import send_email, receive_email # Import the send_email function
 from threading import Thread
 from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
 # from modules.mqtt_subscriber import email_notifier
