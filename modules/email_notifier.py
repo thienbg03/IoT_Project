@@ -3,7 +3,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
 
-def send_email_notification():
+def send_email_notification(recipient_email):
     # Email server configuration
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
@@ -19,7 +19,7 @@ def send_email_notification():
     # Create the email
     msg = MIMEMultipart()
     msg['From'] = username
-    msg['To'] = 'cevelinevangelista@gmail.com'
+    msg['To'] = recipient_email
     msg['Subject'] = subject
 
     # Attach email body
@@ -30,7 +30,7 @@ def send_email_notification():
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
             server.login(username, password)
-            server.sendmail(username, 'cevelinevangelista@gmail.com', msg.as_string())
+            server.sendmail(username, recipient_email, msg.as_string())
         print('Email sent successfully!')
     except Exception as e:
         print(f'Failed to send email: {e}')
