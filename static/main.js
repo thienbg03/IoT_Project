@@ -119,6 +119,31 @@ function updateLightIntensity() {
     }
 }
 
+function updateLED(){
+  fetch('/return_status')
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.error) {
+                console.error('Error:', data.error);
+            } else {
+                let led_status = data.led_state
+                console.log("LED STATUS: " + led_status);
+                if(led_status == "ON"){
+                    document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOn.jpg";
+                    document.getElementById('led-status').textContent = led_status;
+                  }else{
+                    document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOff.jpg";
+                    document.getElementById('led-status').textContent = led_status;
+                }
+            }
+        })
+        .catch((error) => console.error("Error fetching sensor data:", error));
+}
 
 // On Page Load Create the Temperature and Humidity Charts
 document.addEventListener('DOMContentLoaded', function () {
@@ -307,8 +332,8 @@ document.addEventListener('DOMContentLoaded', function () {
     lightIntensityChart = new ApexCharts(lightChartEl, lightIntensityConfig);
     lightIntensityChart.render();
   }
-  displayTemp();
-  setInterval(displayTemp, 1000);
-  setInterval(updateFanUI, 1000);
+  // displayTemp();
+  // setInterval(displayTemp, 1000);
+  // setInterval(updateFanUI, 1000);
 });
 
