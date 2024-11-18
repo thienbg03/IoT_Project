@@ -30,6 +30,7 @@ GPIO.output(led_pin, GPIO.LOW)
 # Initialize global states
 LED_STATE = 'OFF'
 FAN_STATE = 'OFF'
+LIGHT_INTENSITY = 0
 EMAIL_STATUS = "UNSENT"
 email_thread_running = False
 # Initial LED statesudo apt-get install python3-rpi.gpio
@@ -103,12 +104,12 @@ def return_status():
 
 @app.route('/api/light_intensity', methods=['POST'])
 def get_light_data():
-    global LED_STATE, EMAIL_STATUS  # Use the global variable to keep track of the LED state
+    global LED_STATE, EMAIL_STATUS, LIGHT_INTENSITY  # Use the global variable to keep track of the LED state
     data = request.json
-    light_intensity = data.get('light_intensity')
+    LIGHT_INTENSITY = data.get('light_intensity')
     print(data)
-    print(light_intensity)
-    if light_intensity < 1500:
+    print(LIGHT_INTENSITY)
+    if LIGHT_INTENSITY < 1500:
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
         EMAIL_STATUS = "SENT"
@@ -117,7 +118,13 @@ def get_light_data():
         GPIO.output(led_pin, GPIO.LOW)  # Turn the LED on
         LED_STATE = 'OFF'  # Update the state variable
 
-    return jsonify({'message': 'Data received successfully', 'light_intensity': light_intensity})
+    return jsonify({'message': 'Data received successfully', 'light_intensity': LIGHT_INTENSITY})
+
+@app.route('/get_light_data', methods=['GET'])
+def send_light_data():
+    # Simulating light intensity data for testing purposes
+    global LIGHT_INTENSITY
+    return jsonify({'light_intensity': LIGHT_INTENSITY})
 
 def send_email_trigger(temperature):
     global email_thread_running

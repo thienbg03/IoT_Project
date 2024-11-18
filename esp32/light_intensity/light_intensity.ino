@@ -10,7 +10,7 @@ const char* password = "melbayjulian1";
 //const char* password = "14730078";
 
 // MQTT Broker IP address 192.168.0.25
-const char* mqtt_server = "192.168.0.25";
+const char* mqtt_server = "192.168.0.22";
 //const char* mqtt_server = "192.168.0.141";
 
 // Initialize WiFi and MQTT clients
@@ -80,18 +80,26 @@ void callback(String topic, byte* message, unsigned int length) {
 
 void reconnect() {
   while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    if (client.connect("vanieriot")) {
-      Serial.println("connected");
-      client.subscribe("room/control"); // Subscribe to control topic
+    Serial.print("Attempting MQTT connection... ");
+    
+    // Generate a unique client ID using the ESP32's MAC address
+    String clientId = "ESP32Client-" + String(WiFi.macAddress());
+    Serial.print("Using client ID: ");
+    Serial.println(clientId);
+
+    // Attempt to connect with the unique client ID
+    if (client.connect(clientId.c_str())) {
+      Serial.println("Connected to MQTT broker");
+      client.subscribe("room/control");
     } else {
-      Serial.print("failed, rc=");
+      Serial.print("Connection failed, rc=");
       Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
+      Serial.println(" - retrying in 5 seconds");
       delay(5000);
     }
   }
 }
+
 
 void loop() {
   if (!client.connected()) {
