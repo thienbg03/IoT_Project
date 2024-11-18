@@ -24,21 +24,22 @@ GPIO.setmode(GPIO.BCM)
 
 # Use BCM pin numbering
 GPIO.setup(led_pin, GPIO.OUT)  # Set the pin as an output
-GPIO.output(led_pin, GPIO.LOW) 
+GPIO.output(led_pin, GPIO.LOW)
 
 # Start with the LED turned off
 # Initialize global states
 LED_STATE = 'OFF'
 FAN_STATE = 'OFF'
+EMAIL_STATUS = "UNSENT"
 email_thread_running = False
-# Initial LED statesudo apt-get install python3-rpi.gpio 
+# Initial LED statesudo apt-get install python3-rpi.gpio
 sensor = DHT11Sensor(DHT_PIN)
 
 @app.route('/')
 def index():
     # """Render the main dashboard with the current LED state."""
     # test_receive_email()
-    send_email_trigger(5)   
+    send_email_trigger(5)
     return render_template('index.html', led_state=LED_STATE)
 
 @app.route('/toggle_led', methods=['POST'])
@@ -79,7 +80,7 @@ def get_sensor_data():
 @app.route('/toggle_fan', methods=['POST'])
 def toggle_fan():
     # """Toggle the LED state based on the request from the frontend."""
-    global FAN_STATE  # Use the global variable to keep track of the LED state
+    global FAN_STATE, EMAIL_STATUS  # Use the global variable to keep track of the LED state
 
     # Get the state from the JSON request
     data = request.get_json()
@@ -88,6 +89,7 @@ def toggle_fan():
         #turn_on_fan()
         FAN_STATE = 'ON'
     else:
+        EMAIL_STATUS = "UNSENT"
         #turn_off_fan()
         FAN_STATE = 'OFF'  # Update the state variable
 
@@ -96,26 +98,26 @@ def toggle_fan():
 
 @app.route('/return_status', methods=['GET'])
 def return_status():
-    global LED_STATE, FAN_STATE
-    return jsonify({'led_state': LED_STATE, 'fan_state': FAN_STATE})
+    global LED_STATE, FAN_STATE, EMAIL_STATUS
+    return jsonify({'led_state': LED_STATE, 'fan_state': FAN_STATE, 'email_status': EMAIL_STATUS})
 
 @app.route('/api/light_intensity', methods=['POST'])
 def get_light_data():
-    global LED_STATE  # Use the global variable to keep track of the LED state
-
+    global LED_STATE, EMAIL_STATUS  # Use the global variable to keep track of the LED state
     data = request.json
-    light_intensity = data.get('light_intensity')    
+    light_intensity = data.get('light_intensity')
     print(data)
     print(light_intensity)
     if light_intensity < 1500:
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
+        EMAIL_STATUS = "SENT"
         send_email_notification('santisinsight@gmail.com')
     else:
         GPIO.output(led_pin, GPIO.LOW)  # Turn the LED on
         LED_STATE = 'OFF'  # Update the state variable
 
-    return jsonify({'message': 'Data received successfully'})
+    return jsonify({'message': 'Data received successfully', 'light_intensity': light_intensity})
 
 def send_email_trigger(temperature):
     global email_thread_running
