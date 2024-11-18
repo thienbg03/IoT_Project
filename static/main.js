@@ -103,24 +103,26 @@ function updateHumidity(value) {
 }
 
 function updateLightIntensity() {
-  fetch('/get_light_data')  // Assuming /get_light_data returns a single light intensity value
+  fetch('/return_status')  // Assuming /get_light_data returns a single light intensity value
     .then((response) => response.json())  // Parse the JSON response
     .then((data) => {
       // Assuming data has the light intensity value in `data.intensity`
       const newIntensityValue = data.light_intensity;
-
+      console.log(newIntensityValue)
+      document.getElementById("lightIntensity").textContent = newIntensityValue;
       // Get the current time and format it as you need for the x-axis
       const date = new Date();
       const hour = date.getHours();
       const min = date.getMinutes();
-      const time = `${hour}:${min}`;  // Example: '14:30'
+      const secs = date.getSeconds();
+      const time = `${hour}:${min}:${secs}`;  // Example: '14:30'
 
       // Add the new value to your existing intensity array
       intensityArray.push(newIntensityValue);  // Add new intensity value
       timeArray.push(time);  // Add new time value
 
       // Optionally, if the array gets too large, remove the oldest data point to keep the chart manageable
-      if (intensityArray.length > 10) {  // Keep only the last 10 values
+      if (intensityArray.length > 7) {  // Keep only the last 7 values
         intensityArray.shift();  // Remove the oldest intensity value
         timeArray.shift();  // Remove the oldest time value
       }
@@ -161,10 +163,12 @@ function updateLED(){
                     document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOn.jpg";
                     document.getElementById('led-status').textContent = led_status;
                     document.getElementById('emailStatus').textContent = email_status;
+                    document.getElementById('led-switch').checked = true;
                   }else{
                     document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOff.jpg";
                     document.getElementById('led-status').textContent = led_status;
                     document.getElementById('emailStatus').textContent = email_status;
+                    document.getElementById('led-switch').checked = false;
                 }
             }
         })
@@ -266,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const lightIntensityConfig = {
       series: [
         {
-          data: [21, 30, 22, 42, 26, 35, 29]
+          data: intensityArray
         }
       ],
       chart: {
@@ -330,12 +334,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       },
       xaxis: {
-        categories: ['oi', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'mate'],
+        categories: timeArray,
         axisBorder: {
           show: false
         },
         axisTicks: {
-          show: false
+          show: true
         },
         labels: {
           show: true,
@@ -350,8 +354,14 @@ document.addEventListener('DOMContentLoaded', function () {
           show: true
         },
         min: 0,
-        max: 500,
-        tickAmount: 4
+        max: 4500,
+        tickAmount: 4,
+        tile:{
+          text: "Intensity",
+          style:{
+            fontSize: '12px'
+          }
+        },
       }
     };
   if (lightChartEl) {
@@ -361,6 +371,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // displayTemp();
   // setInterval(displayTemp, 1000);
   // setInterval(updateFanUI, 1000);
-  setInterval(updateLightIntensity, 10000);
+  setInterval(updateLightIntensity, 3000);
+  setInterval(updateLED, 3000);
 });
 
