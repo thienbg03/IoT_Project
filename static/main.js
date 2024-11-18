@@ -268,102 +268,114 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Temperature Chart - Radial Bar Chart
   const lightIntensityConfig = {
-      series: [
-        {
-          data: intensityArray
-        }
-      ],
-      chart: {
-        height: 232,
-        parentHeightOffset: 0,
-        parentWidthOffset: 0,
-        toolbar: {
-          show: false
-        },
-        type: 'area'
-      },
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        width: 3,
-        curve: 'smooth'
-      },
-      legend: {
+    series: [
+      {
+        data: intensityArray
+      }
+    ],
+    chart: {
+      height: 232,
+      parentHeightOffset: 0,
+      parentWidthOffset: 0,
+      toolbar: {
         show: false
       },
-      markers: {
-        size: 6,
-        colors: 'transparent',
-        strokeColors: 'transparent',
-        strokeWidth: 4,
-        discrete: [
-          {
-            fillColor: config.colors.white,
-            seriesIndex: 0,
-            dataPointIndex: 6,
-            strokeColor: config.colors.primary,
-            strokeWidth: 2,
-            size: 6,
-            radius: 8
-          }
-        ],
-        hover: {
-          size: 7
+      type: 'area'
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      width: 3,
+      curve: 'smooth'
+    },
+    legend: {
+      show: false
+    },
+    markers: {
+      size: 6,
+      colors: 'transparent',
+      strokeColors: 'transparent',
+      strokeWidth: 4,
+      discrete: [
+        {
+          fillColor: config.colors.white,
+          seriesIndex: 0,
+          dataPointIndex: 6,
+          strokeColor: config.colors.primary,
+          strokeWidth: 2,
+          size: 6,
+          radius: 8
         }
-      },
-      colors: [config.colors.primary],
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: shadeColor,
-          shadeIntensity: 0.6,
-          opacityFrom: 0.5,
-          opacityTo: 0.25,
-          stops: [0, 95, 100]
-        }
-      },
-      grid: {
-        borderColor: borderColor,
-        strokeDashArray: 8,
-        padding: {
-          top: -20,
-          bottom: -8,
-          left: 0,
-          right: 8
-        }
-      },
-      xaxis: {
-        categories: timeArray,
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: true
-        },
-        labels: {
-          show: true,
-          style: {
-            fontSize: '13px',
-            colors: labelColor
-          }
-        }
-      },
-      yaxis: {
-        labels: {
-          show: true
-        },
-        min: 0,
-        max: 4500,
-        tickAmount: 4,
-        tile:{
-          text: "Intensity",
-          style:{
-            fontSize: '12px'
-          }
-        },
+      ],
+      hover: {
+        size: 7
       }
-    };
+    },
+    colors: [config.colors.primary],
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shade: shadeColor,
+        shadeIntensity: 0.6,
+        opacityFrom: 0.5,
+        opacityTo: 0.25,
+        stops: [0, 95, 100]
+      }
+    },
+    grid: {
+      borderColor: borderColor,
+      strokeDashArray: 8,
+      padding: {
+        top: -20,
+        bottom: -8,
+        left: 0,
+        right: 8
+      }
+    },
+    xaxis: {
+      categories: timeArray,
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: true
+      },
+      labels: {
+        show: true,
+        style: {
+          fontSize: '12px',
+          colors: labelColor
+        }
+      },
+      title: {
+        text: 'Time',
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: labelColor,
+          marginBottom: 5  // Ensure enough space for the card
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        show: true
+      },
+      min: 0,
+      max: 4500,
+      tickAmount: 4,
+      title: {
+        text: 'Intensity',  // Add title for Y-axis
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: labelColor,
+        }
+      }
+    }
+  };
+
   if (lightChartEl) {
     lightIntensityChart = new ApexCharts(lightChartEl, lightIntensityConfig);
     lightIntensityChart.render();
