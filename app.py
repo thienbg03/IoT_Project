@@ -112,11 +112,11 @@ def get_light_data():
     LIGHT_INTENSITY = light_intensity
     print(data)
     print(light_intensity)
-    if light_intensity < 1500:
+    if light_intensity < 400:
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
         EMAIL_STATUS = "SENT"
-        send_email_notification('potjackson19@gmail.com')
+        send_email_notification('cevelinevangelista@gmail.com')
     else:
         GPIO.output(led_pin, GPIO.LOW)  # Turn the LED off
         EMAIL_STATUS = "UNSENT"
