@@ -4,7 +4,7 @@ import imaplib
 import smtplib
 
 sender_email = 'santisinsight@gmail.com'
-sender_password = 'dtgu jzjx qlwk oopn'
+sender_password = 'vyhx wkam hrli olmr'
 server = 'imap.gmail.com'
 
 def send_email(recipient_email, temperature):

@@ -1,6 +1,8 @@
 
 // Declare global variables for chart instances
-let temperatureChart, growthChart;
+let temperatureChart, growthChart, lightIntensityChart;
+let intensityArray = [];
+let timeArray = [];
 // Function to toggle the LED state based on the switch
 function toggleLED() {
     const isOn = document.getElementById('led-switch').checked ? 'ON' : 'OFF';
@@ -100,20 +102,92 @@ function updateHumidity(value) {
     }
 }
 
+function updateLightIntensity() {
+  fetch('/return_status')  // Assuming /get_light_data returns a single light intensity value
+    .then((response) => response.json())  // Parse the JSON response
+    .then((data) => {
+      // Assuming data has the light intensity value in `data.intensity`
+      const newIntensityValue = data.light_intensity;
+      console.log(newIntensityValue)
+      document.getElementById("lightIntensity").textContent = newIntensityValue;
+      // Get the current time and format it as you need for the x-axis
+      const date = new Date();
+      const hour = date.getHours();
+      const min = date.getMinutes();
+      const secs = date.getSeconds();
+      const time = `${hour}:${min}:${secs}`;  // Example: '14:30'
+
+      // Add the new value to your existing intensity array
+      intensityArray.push(newIntensityValue);  // Add new intensity value
+      timeArray.push(time);  // Add new time value
+
+      // Optionally, if the array gets too large, remove the oldest data point to keep the chart manageable
+      if (intensityArray.length > 7) {  // Keep only the last 7 values
+        intensityArray.shift();  // Remove the oldest intensity value
+        timeArray.shift();  // Remove the oldest time value
+      }
+
+      // Update the chart with the new series and categories (time values)
+      if (lightIntensityChart) {
+        lightIntensityChart.updateSeries([{
+          data: intensityArray  // Update the data in the series
+        }]);
+
+        lightIntensityChart.updateOptions({
+          xaxis: {
+            categories: timeArray  // Update the x-axis with the new time values
+          }
+        });
+      }
+    })
+    .catch((error) => console.error("Error fetching light intensity data:", error));
+}
 
 
+function updateLED(){
+  fetch('/return_status')
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.error) {
+                console.error('Error:', data.error);
+            } else {
+                let led_status = data.led_state
+                let email_status = data.email_status
+                console.log("LED STATUS: " + led_status);
+                if(led_status == "ON"){
+                    document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOn.jpg";
+                    document.getElementById('led-status').textContent = led_status;
+                    document.getElementById('emailStatus').textContent = email_status;
+                    document.getElementById('led-switch').checked = true;
+                  }else{
+                    document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOff.jpg";
+                    document.getElementById('led-status').textContent = led_status;
+                    document.getElementById('emailStatus').textContent = email_status;
+                    document.getElementById('led-switch').checked = false;
+                }
+            }
+        })
+        .catch((error) => console.error("Error fetching sensor data:", error));
+}
 
 // On Page Load Create the Temperature and Humidity Charts
 document.addEventListener('DOMContentLoaded', function () {
   // Ensure all elements are loaded before initializing the charts
   const temperatureChartEl = document.querySelector('#temperatureChart');
   const growthChartEl = document.querySelector('#growthChart');
-
+  const lightChartEl = document.querySelector('#lightChart');
   // Define chart options
   const cardColor = config.colors.cardColor;
   const headingColor = config.colors.headingColor;
   const legendColor = config.colors.bodyColor;
-
+  const shadeColor = config.colors.cardColor;
+  const borderColor = config.colors.borderColor;
+  const labelColor = config.colors.textMuted;
   // Growth Chart - Radial Bar Chart
   const growthChartOptions = {
       series: [40],
@@ -191,8 +265,125 @@ document.addEventListener('DOMContentLoaded', function () {
       temperatureChart = new ApexCharts(temperatureChartEl, temperatureChartOptions);
       temperatureChart.render();
   }
-  displayTemp();
-  setInterval(displayTemp, 1000);
-  setInterval(updateFanUI, 1000);
+
+// Temperature Chart - Radial Bar Chart
+  const lightIntensityConfig = {
+    series: [
+      {
+        data: intensityArray
+      }
+    ],
+    chart: {
+      height: 232,
+      parentHeightOffset: 0,
+      parentWidthOffset: 0,
+      toolbar: {
+        show: false
+      },
+      type: 'area'
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      width: 3,
+      curve: 'smooth'
+    },
+    legend: {
+      show: false
+    },
+    markers: {
+      size: 6,
+      colors: 'transparent',
+      strokeColors: 'transparent',
+      strokeWidth: 4,
+      discrete: [
+        {
+          fillColor: config.colors.white,
+          seriesIndex: 0,
+          dataPointIndex: 6,
+          strokeColor: config.colors.primary,
+          strokeWidth: 2,
+          size: 6,
+          radius: 8
+        }
+      ],
+      hover: {
+        size: 7
+      }
+    },
+    colors: [config.colors.primary],
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shade: shadeColor,
+        shadeIntensity: 0.6,
+        opacityFrom: 0.5,
+        opacityTo: 0.25,
+        stops: [0, 95, 100]
+      }
+    },
+    grid: {
+      borderColor: borderColor,
+      strokeDashArray: 8,
+      padding: {
+        top: -20,
+        bottom: -8,
+        left: 0,
+        right: 8
+      }
+    },
+    xaxis: {
+      categories: timeArray,
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: true
+      },
+      labels: {
+        show: true,
+        style: {
+          fontSize: '12px',
+          colors: labelColor
+        }
+      },
+      title: {
+        text: 'Time',
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: labelColor,
+          marginBottom: 5  // Ensure enough space for the card
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        show: true
+      },
+      min: 0,
+      max: 4500,
+      tickAmount: 4,
+      title: {
+        text: 'Intensity',  // Add title for Y-axis
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: labelColor,
+        }
+      }
+    }
+  };
+
+  if (lightChartEl) {
+    lightIntensityChart = new ApexCharts(lightChartEl, lightIntensityConfig);
+    lightIntensityChart.render();
+  }
+  // displayTemp();
+  // setInterval(displayTemp, 1000);
+  // setInterval(updateFanUI, 1000);
+  setInterval(updateLightIntensity, 3000);
+  setInterval(updateLED, 3000);
 });
 
