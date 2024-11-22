@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     ],
     chart: {
-      height: 232,
+      height: 285,
       parentHeightOffset: 0,
       parentWidthOffset: 0,
       toolbar: {
