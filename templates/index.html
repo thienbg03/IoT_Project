@@ -77,6 +77,10 @@
                       <label for="lightThreshold" class="form-label">Light Intensity Threshold</label>
                       <input type="number" class="form-control" id="lightThreshold" name="lightThreshold" value="400">
                     </div>
+                    <div class="mb-3">
+                      <label for="bThreshold" class="form-label">Bluetooth RSSI Threshold</label>
+                      <input type="number" class="form-control" id="bThreshold" name="bThreshold" value="-50">
+                    </div>
                     <!-- Save Button -->
                     <button type="button" class="btn btn-primary" id="saveButton" disabled>Save</button>
                   </form>
@@ -84,7 +88,7 @@
             </div>
           </li>
           <!-- Sign Out Button -->
-          <li class="menu-item active open mt-5">
+          <li class="menu-item open mt-5">
             <div class="d-flex justify-content-center"> <!-- Centering container -->
               <button class="btn btn-outline-danger" id="signOutButton" onclick="" disabled>Sign Out</button>
             </div>
@@ -210,6 +214,25 @@
                 </div>
               </div>
               <!-- Second Row -->
+
+               <!-- Bluetooth Device Count Component -->
+                <div class="col-4">
+                  <div class="card-header d-flex align-items-center justify-content-between">
+                    <div class="card-title mb-0">
+                      <h5 class="m-0 me-2">Bluetooth Devices Nearby</h5>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="text-center">
+                        <span id="bluetoothCount" class="display-4">0</span>
+                        <br>
+                        <button class="btn btn-outline-primary mt-3" onclick="updateBluetoothCount()">Scan Bluetooth</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
             </div>
 
           </div>
