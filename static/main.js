@@ -103,24 +103,26 @@ function updateHumidity(value) {
 }
 
 function updateLightIntensity() {
-  fetch('/get_light_data')  // Assuming /get_light_data returns a single light intensity value
+  fetch('/return_status')  // Assuming /get_light_data returns a single light intensity value
     .then((response) => response.json())  // Parse the JSON response
     .then((data) => {
       // Assuming data has the light intensity value in `data.intensity`
       const newIntensityValue = data.light_intensity;
-
+      console.log(newIntensityValue)
+      document.getElementById("lightIntensity").textContent = newIntensityValue;
       // Get the current time and format it as you need for the x-axis
       const date = new Date();
       const hour = date.getHours();
       const min = date.getMinutes();
-      const time = `${hour}:${min}`;  // Example: '14:30'
+      const secs = date.getSeconds();
+      const time = `${hour}:${min}:${secs}`;  // Example: '14:30'
 
       // Add the new value to your existing intensity array
       intensityArray.push(newIntensityValue);  // Add new intensity value
       timeArray.push(time);  // Add new time value
 
       // Optionally, if the array gets too large, remove the oldest data point to keep the chart manageable
-      if (intensityArray.length > 10) {  // Keep only the last 10 values
+      if (intensityArray.length > 7) {  // Keep only the last 7 values
         intensityArray.shift();  // Remove the oldest intensity value
         timeArray.shift();  // Remove the oldest time value
       }
@@ -161,10 +163,12 @@ function updateLED(){
                     document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOn.jpg";
                     document.getElementById('led-status').textContent = led_status;
                     document.getElementById('emailStatus').textContent = email_status;
+                    document.getElementById('led-switch').checked = true;
                   }else{
                     document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOff.jpg";
                     document.getElementById('led-status').textContent = led_status;
                     document.getElementById('emailStatus').textContent = email_status;
+                    document.getElementById('led-switch').checked = false;
                 }
             }
         })
@@ -264,96 +268,114 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Temperature Chart - Radial Bar Chart
   const lightIntensityConfig = {
-      series: [
-        {
-          data: [21, 30, 22, 42, 26, 35, 29]
-        }
-      ],
-      chart: {
-        height: 232,
-        parentHeightOffset: 0,
-        parentWidthOffset: 0,
-        toolbar: {
-          show: false
-        },
-        type: 'area'
-      },
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        width: 3,
-        curve: 'smooth'
-      },
-      legend: {
+    series: [
+      {
+        data: intensityArray
+      }
+    ],
+    chart: {
+      height: 232,
+      parentHeightOffset: 0,
+      parentWidthOffset: 0,
+      toolbar: {
         show: false
       },
-      markers: {
-        size: 6,
-        colors: 'transparent',
-        strokeColors: 'transparent',
-        strokeWidth: 4,
-        discrete: [
-          {
-            fillColor: config.colors.white,
-            seriesIndex: 0,
-            dataPointIndex: 6,
-            strokeColor: config.colors.primary,
-            strokeWidth: 2,
-            size: 6,
-            radius: 8
-          }
-        ],
-        hover: {
-          size: 7
+      type: 'area'
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      width: 3,
+      curve: 'smooth'
+    },
+    legend: {
+      show: false
+    },
+    markers: {
+      size: 6,
+      colors: 'transparent',
+      strokeColors: 'transparent',
+      strokeWidth: 4,
+      discrete: [
+        {
+          fillColor: config.colors.white,
+          seriesIndex: 0,
+          dataPointIndex: 6,
+          strokeColor: config.colors.primary,
+          strokeWidth: 2,
+          size: 6,
+          radius: 8
         }
-      },
-      colors: [config.colors.primary],
-      fill: {
-        type: 'gradient',
-        gradient: {
-          shade: shadeColor,
-          shadeIntensity: 0.6,
-          opacityFrom: 0.5,
-          opacityTo: 0.25,
-          stops: [0, 95, 100]
-        }
-      },
-      grid: {
-        borderColor: borderColor,
-        strokeDashArray: 8,
-        padding: {
-          top: -20,
-          bottom: -8,
-          left: 0,
-          right: 8
-        }
-      },
-      xaxis: {
-        categories: ['oi', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'mate'],
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        },
-        labels: {
-          show: true,
-          style: {
-            fontSize: '13px',
-            colors: labelColor
-          }
-        }
-      },
-      yaxis: {
-        labels: {
-          show: true
-        },
-        min: 0,
-        max: 500,
-        tickAmount: 4
+      ],
+      hover: {
+        size: 7
       }
-    };
+    },
+    colors: [config.colors.primary],
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shade: shadeColor,
+        shadeIntensity: 0.6,
+        opacityFrom: 0.5,
+        opacityTo: 0.25,
+        stops: [0, 95, 100]
+      }
+    },
+    grid: {
+      borderColor: borderColor,
+      strokeDashArray: 8,
+      padding: {
+        top: -20,
+        bottom: -8,
+        left: 0,
+        right: 8
+      }
+    },
+    xaxis: {
+      categories: timeArray,
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: true
+      },
+      labels: {
+        show: true,
+        style: {
+          fontSize: '12px',
+          colors: labelColor
+        }
+      },
+      title: {
+        text: 'Time',
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: labelColor,
+          marginBottom: 5  // Ensure enough space for the card
+        }
+      }
+    },
+    yaxis: {
+      labels: {
+        show: true
+      },
+      min: 0,
+      max: 4500,
+      tickAmount: 4,
+      title: {
+        text: 'Intensity',  // Add title for Y-axis
+        style: {
+          fontSize: '14px',
+          fontWeight: 'bold',
+          color: labelColor,
+        }
+      }
+    }
+  };
+
   if (lightChartEl) {
     lightIntensityChart = new ApexCharts(lightChartEl, lightIntensityConfig);
     lightIntensityChart.render();
@@ -361,6 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // displayTemp();
   // setInterval(displayTemp, 1000);
   // setInterval(updateFanUI, 1000);
-  setInterval(updateLightIntensity, 10000);
+  setInterval(updateLightIntensity, 3000);
+  setInterval(updateLED, 3000);
 });
 
