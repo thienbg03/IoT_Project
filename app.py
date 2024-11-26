@@ -5,7 +5,7 @@ from modules.fan import turn_on_fan, turn_off_fan
 import threading
 from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
 from time import sleep
-from modules.email_handler import send_temperature_email, send_light_email, receive_email # Import the send_temperature_email function
+from modules.email_handler import send_temperature_email, send_light_email, send_login_email, receive_email # Import the send_temperature_email function
 from threading import Thread
 # from modules.mqtt_subscriber import email_notifier
 from modules.bluetooth_scanner import scan_bluetooth_devices, get_bluetooth_data
@@ -26,7 +26,7 @@ LED_STATE = 'OFF'
 FAN_STATE = 'OFF'
 LIGHT_INTENSITY = 0
 EMAIL_STATUS = "UNSENT"
-LIGHT_INTENSITY = 0
+USER_TAG = 'default'
 email_thread_running = False
 # Initial LED statesudo apt-get install python3-rpi.gpio
 sensor = DHT11Sensor(DHT_PIN)
@@ -121,7 +121,7 @@ def get_light_data():
     if LIGHT_INTENSITY is None:
         return jsonify({'error': 'light_intensity is required and cannot be None'}), 400
     
-    if LIGHT_INTENSITY < 1500:
+    if LIGHT_INTENSITY < 0:
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
         EMAIL_STATUS = "SENT"
@@ -132,6 +132,24 @@ def get_light_data():
         LED_STATE = 'OFF'  # Update the state variable
 
     return jsonify({'message': 'Data received successfully', 'light_intensity': LIGHT_INTENSITY})
+
+@app.route('/api/rfid', methods=['POST'])
+def get_rfid_data():
+    global LED_STATE, EMAIL_STATUS, LIGHT_INTENSITY  # Use the global variable to keep track of the LED state
+    data = request.json
+    if not data or "rfid_code" not in data:
+        return jsonify({"error": "Invalid request, missing 'rfid_code'"}), 400
+    
+    # Get the RFID code from the request
+    USER_TAG = data.get("rfid_code")
+    print(data)
+    print(USER_TAG)
+    
+    email_thread = Thread(target=send_login_email, args=('santisinsight@gmail.com', USER_TAG))
+    email_thread.start()
+
+    return jsonify({'message': 'Data received successfully', 'light_intensity': LIGHT_INTENSITY})
+
 
 @app.route('/get_light_data', methods=['GET'])
 def send_light_data():

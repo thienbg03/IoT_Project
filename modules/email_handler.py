@@ -54,6 +54,8 @@ def send_light_email(recipient_email):
         subject = "Light Notification"
         body = f"The Light is ON at {current_time}."
         
+        message = f'Subject: {subject}\n\n{body}'
+
         # Send the email
         server = smtplib.SMTP_SSL(smtp_server, smtp_port)
         server.login(sender_email, sender_password)
@@ -65,6 +67,33 @@ def send_light_email(recipient_email):
     except Exception as e:
         print(f'Failed to send email. Error: {e}')
         return False
+
+def send_login_email(recipient_email, user):
+    try:
+        # Email configuration
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 465
+
+        # Email content
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        subject = "User Logged In"
+        body = f"User {user} entered at {current_time}."
+        
+        message = f'Subject: {subject}\n\n{body}'
+
+        # Send the email
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, recipient_email, message)
+        server.quit()
+
+        print('Email sent successfully!')
+        return True
+    except Exception as e:
+        print(f'Failed to send email. Error: {e}')
+        return False
+
 
 def receive_email():
     print("Receive email method is being called from email.py")
