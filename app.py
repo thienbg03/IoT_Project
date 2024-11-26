@@ -5,6 +5,7 @@ from modules.email_temp import send_email, receive_email # Import the send_email
 from threading import Thread
 from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
 # from modules.mqtt_subscriber import email_notifier
+from modules.bluetooth_scanner import scan_bluetooth_devices, get_bluetooth_data
 
 
 # Initialize the Flask application
@@ -57,6 +58,12 @@ def cleanup():
     """Clean up the GPIO pins. It doesn't work for some reason"""
     GPIO.cleanup()  # Reset the GPIO pins to their default state
     return "GPIO cleanup done."  # Confirmation message
+
+@app.route('/bluetooth/devices', methods=['GET'])
+def get_bluetooth_devices():
+    devices = scan_bluetooth_devices()
+    # save_devices_to_json(devices)
+    return jsonify(devices)
 
 @app.route('/sensor_data', methods=['GET'])
 def get_sensor_data():
