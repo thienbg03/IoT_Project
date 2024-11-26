@@ -9,6 +9,7 @@ from modules.email_temp import send_email, receive_email # Import the send_email
 from modules.email_notifier import send_email_notification
 from threading import Thread
 # from modules.mqtt_subscriber import email_notifier
+from modules.bluetooth_scanner import scan_bluetooth_devices, get_bluetooth_data
 
 
 # Initialize the Flask application
@@ -25,6 +26,7 @@ DHT_PIN = 18
 # Initialize global states
 LED_STATE = 'OFF'
 FAN_STATE = 'OFF'
+LIGHT_INTENSITY = 0
 EMAIL_STATUS = "UNSENT"
 LIGHT_INTENSITY = 0
 email_thread_running = False
@@ -51,7 +53,7 @@ def toggle_led():
     global LED_STATE  # Use the global variable to keep track of the LED state
     # Get the state from the JSON request
     data = request.get_json()
-    print(data['state'])
+    #print(data['state'])
     if data['state'] == 'ON':
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
@@ -67,6 +69,12 @@ def cleanup():
     """Clean up the GPIO pins. It doesn't work for some reason"""
     GPIO.cleanup()  # Reset the GPIO pins to their default state
     return "GPIO cleanup done."  # Confirmation message
+
+@app.route('/bluetooth/devices', methods=['GET'])
+def get_bluetooth_devices():
+    devices = scan_bluetooth_devices()
+    # save_devices_to_json(devices)
+    return jsonify(devices)
 
 @app.route('/sensor_data', methods=['GET'])
 def get_sensor_data():
@@ -87,7 +95,7 @@ def toggle_fan():
 
     # Get the state from the JSON request
     data = request.get_json()
-    print(data['state'])
+    #print(data['state'])
     if data['state'] == 'OFF':
         #turn_on_fan()
         FAN_STATE = 'ON'
@@ -108,11 +116,10 @@ def return_status():
 def get_light_data():
     global LED_STATE, EMAIL_STATUS, LIGHT_INTENSITY  # Use the global variable to keep track of the LED state
     data = request.json
-    light_intensity = data.get('light_intensity')
-    LIGHT_INTENSITY = light_intensity
-    print(data)
-    print(light_intensity)
-    if light_intensity < 400:
+    LIGHT_INTENSITY = data.get('light_intensity')
+    #print(data)
+    #print(LIGHT_INTENSITY)
+    if LIGHT_INTENSITY < 1500:
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
         EMAIL_STATUS = "SENT"
@@ -122,7 +129,13 @@ def get_light_data():
         EMAIL_STATUS = "UNSENT"
         LED_STATE = 'OFF'  # Update the state variable
 
-    return jsonify({'message': "get light successful"})
+    return jsonify({'message': 'Data received successfully', 'light_intensity': LIGHT_INTENSITY})
+
+@app.route('/get_light_data', methods=['GET'])
+def send_light_data():
+    # Simulating light intensity data for testing purposes
+    global LIGHT_INTENSITY
+    return jsonify({'light_intensity': LIGHT_INTENSITY})
 
 def send_email_trigger(temperature):
     global email_thread_running
