@@ -1,14 +1,24 @@
-# email.py
 import email
 import imaplib
 import smtplib
+from uuid import uuid4
 
 sender_email = 'santisinsight@gmail.com'
 sender_password = 'vyhx wkam hrli olmr'
 server = 'imap.gmail.com'
 
+# Dictionary to track processed responses for each session
+session_responses = {}
+
+# Create a new session ID for each email sent
+current_session_id = None
+
 def send_email(recipient_email, temperature):
-    subject='Temperature Warning'
+    global current_session_id
+    current_session_id = str(uuid4())  # Generate a new session ID
+    session_responses[current_session_id] = set()  # Initialize empty set for this session
+
+    subject = 'Temperature Warning'
     body = f'The current temperature is {temperature}. Would you like to turn on the fan?'
 
     try:
@@ -33,6 +43,12 @@ def send_email(recipient_email, temperature):
 
 def receive_email():
     print("Receive email method is being called from email.py")
+    global current_session_id
+
+    if not current_session_id:
+        print('No email session is currently active.')
+        return False
+
     # Connect to the server and login
     mail = imaplib.IMAP4_SSL(server)
     mail.login(sender_email, sender_password)
@@ -62,12 +78,23 @@ def receive_email():
                 else:
                     mail_content = message.get_payload(decode=True).decode()
 
-                # Print for debugging
+                # Extract email address from 'from' field
+                sender_address = mail_from.split('<')[-1].strip('>')
+
+                # Check if the sender's email has already responded in this session
+                if sender_address in session_responses[current_session_id]:
+                    print(f'Response from {sender_address} already processed for this session. Ignoring.')
+                    continue
+
+                # Process the email content
                 print(f'From: {mail_from}')
                 print(f'Subject: {mail_subject}')
                 print(f'Content: {mail_content.strip()}')
 
                 if "yes" in mail_content.lower():
+                    session_responses[current_session_id].add(sender_address)  # Mark as processed
                     return True
+                elif "no" in mail_content.lower():
+                    session_responses[current_session_id].add(sender_address)  # Mark as processed
 
     return False

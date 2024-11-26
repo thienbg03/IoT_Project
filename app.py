@@ -52,7 +52,7 @@ def toggle_led():
     global LED_STATE  # Use the global variable to keep track of the LED state
     # Get the state from the JSON request
     data = request.get_json()
-    print(data['state'])
+    #print(data['state'])
     if data['state'] == 'ON':
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
@@ -88,7 +88,7 @@ def toggle_fan():
 
     # Get the state from the JSON request
     data = request.get_json()
-    print(data['state'])
+    #print(data['state'])
     if data['state'] == 'OFF':
         #turn_on_fan()
         FAN_STATE = 'ON'
@@ -110,8 +110,8 @@ def get_light_data():
     global LED_STATE, EMAIL_STATUS, LIGHT_INTENSITY  # Use the global variable to keep track of the LED state
     data = request.json
     LIGHT_INTENSITY = data.get('light_intensity')
-    print(data)
-    print(LIGHT_INTENSITY)
+    #print(data)
+    #print(LIGHT_INTENSITY)
     if LIGHT_INTENSITY < 1500:
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
