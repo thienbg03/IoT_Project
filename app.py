@@ -5,12 +5,10 @@ from modules.fan import turn_on_fan, turn_off_fan
 import threading
 from modules.DHT11 import DHT11Sensor  # Import the updated DHT11Sensor class
 from time import sleep
-from modules.email_temp import send_email, receive_email # Import the send_email function
-from modules.email_notifier import send_email_notification
+from modules.email_handler import send_temperature_email, send_light_email, receive_email # Import the send_temperature_email function
 from threading import Thread
 # from modules.mqtt_subscriber import email_notifier
 from modules.bluetooth_scanner import scan_bluetooth_devices, get_bluetooth_data
-
 
 # Initialize the Flask application
 app = Flask(__name__)
@@ -97,11 +95,11 @@ def toggle_fan():
     data = request.get_json()
     #print(data['state'])
     if data['state'] == 'OFF':
-        #turn_on_fan()
+        turn_on_fan()
         FAN_STATE = 'ON'
     else:
         EMAIL_STATUS = "UNSENT"
-        #turn_off_fan()
+        turn_off_fan()
         FAN_STATE = 'OFF'  # Update the state variable
 
     # Return the current LED state as JSON
@@ -119,11 +117,15 @@ def get_light_data():
     LIGHT_INTENSITY = data.get('light_intensity')
     #print(data)
     #print(LIGHT_INTENSITY)
+    
+    if LIGHT_INTENSITY is None:
+        return jsonify({'error': 'light_intensity is required and cannot be None'}), 400
+    
     if LIGHT_INTENSITY < 1500:
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
         EMAIL_STATUS = "SENT"
-        send_email_notification('cevelinevangelista@gmail.com')
+        send_light_email('cevelinevangelista@gmail.com')
     else:
         GPIO.output(led_pin, GPIO.LOW)  # Turn the LED off
         EMAIL_STATUS = "UNSENT"
@@ -141,8 +143,8 @@ def send_email_trigger(temperature):
     global email_thread_running
     recipient = 'santisinsight@gmail.com'
 
-    # Run send_email in a separate thread
-    email_thread = Thread(target=send_email, args=(recipient, temperature))
+    # Run send_temperature_email in a separate thread
+    email_thread = Thread(target=send_temperature_email, args=(recipient, temperature))
     email_thread.start()
 
     if not email_thread_running:
