@@ -95,10 +95,12 @@ def get_bluetooth_devices():
 
 @app.route('/sensor_data', methods=['GET'])
 def get_sensor_data():
+    global USER_TAG
     # Retrieve temperature and humidity from the DHT11 sensor
     temperature, humidity = sensor.read_data()
     if temperature is not None and humidity is not None:
         sensor.save_data(temperature, humidity)  # Save the data to JSON
+        
         if temperature > 24:
             send_email_trigger(temperature)
         return jsonify({'temperature': temperature, 'humidity': humidity})
@@ -146,7 +148,7 @@ def get_light_data():
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
         EMAIL_STATUS = "SENT"
-        send_light_email('potjackson19@gmail.com')
+        send_light_email('santisinsight@gmail.com')
     else:
         GPIO.output(led_pin, GPIO.LOW)  # Turn the LED off
         EMAIL_STATUS = "UNSENT"
@@ -218,7 +220,7 @@ def send_light_data():
 
 def send_email_trigger(temperature):
     global email_thread_running
-    recipient = 'potjackson19@gmail.com'
+    recipient = 'santisinsight@gmail.com'
 
     # Run send_temperature_email in a separate thread
     email_thread = Thread(target=send_temperature_email, args=(recipient, temperature))

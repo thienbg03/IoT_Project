@@ -43,18 +43,6 @@ function updateProfile(){
 }
 
 function getProfile(){
-    //console.log(data);
-  //   $.ajax({
-  //     url: '/get_profile',
-  //     type: 'GET',
-  //     contentType: 'application/json',
-  //     success: function (response) {
-  //         console.log(response)
-  //     },
-  //     error: function (error) {
-  //         console.log('Error:', error);
-  //     }
-  // });
   fetch('/get_profile')
         .then((response) => {
             if (!response.ok) {
@@ -452,11 +440,11 @@ document.addEventListener('DOMContentLoaded', function () {
     lightIntensityChart = new ApexCharts(lightChartEl, lightIntensityConfig);
     lightIntensityChart.render();
   }
-  // displayTemp();
-  // setInterval(displayTemp, 1000);
-  // setInterval(updateFanUI, 1000);
-  // setInterval(updateLightIntensity, 3000);
-  // setInterval(updateLED, 3000);
+  displayTemp();
+  setInterval(displayTemp, 1000);
+  setInterval(updateFanUI, 1000);
+  setInterval(updateLightIntensity, 3000);
+  setInterval(updateLED, 3000);
   setInterval(getProfile, 1000);
 });
 
