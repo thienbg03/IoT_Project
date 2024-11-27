@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from models.user import db, User  # Import the database and User model
 import RPi.GPIO as GPIO
 from routes.dht11_routes import dht11_blueprint
 from modules.fan import turn_on_fan, turn_off_fan
@@ -13,12 +14,21 @@ from modules.bluetooth_scanner import scan_bluetooth_devices, get_bluetooth_data
 # Initialize the Flask application
 app = Flask(__name__)
 
+# Database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/app_database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize the database
+db.init_app(app)
+
 # simulation with fake data to see if the saving works:
 # app.register_blueprint(dht11_blueprint)
 # Set up GPIO
 led_pin = 16  # Define the GPIO pin number for the LED
 DHT_PIN = 18
 
+# Initial LED statesudo apt-get install python3-rpi.gpio
+sensor = DHT11Sensor(DHT_PIN)
 
 # Start with the LED turned off
 # Initialize global states
@@ -28,14 +38,16 @@ LIGHT_INTENSITY = 0
 EMAIL_STATUS = "UNSENT"
 USER_TAG = 'default'
 email_thread_running = False
-# Initial LED statesudo apt-get install python3-rpi.gpio
-sensor = DHT11Sensor(DHT_PIN)
 
-@app.before_first_request
-def setup_gpio():
+def setup_gpio_and_db():
     GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM) 
-    GPIO.setup(led_pin, GPIO.OUT)  # Set GPIO pin numbering mode to BCM
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(led_pin, GPIO.OUT)
+    with app.app_context():
+        db.create_all()  # Creates the database tables
+
+# Call the function explicitly before running the app
+setup_gpio_and_db()
 
 @app.route('/')
 def index():
@@ -196,11 +208,124 @@ def check_email_response():
     finally:
         email_thread_running = False  # Reset the flag when done
 
+@app.route('/add_user', methods=['POST'])
+def add_user():
+    """Add a new user to the database."""
+    try:
+        data = request.get_json()
+        new_user = User(
+            first_name=data['first_name'],
+            last_name=data['last_name'],
+            rfid_id=data['rfid_id'],
+            temperature_threshold=data['temperature_threshold'],
+            light_intensity_threshold=data['light_intensity_threshold']
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User added successfully!'})
+    except Exception as e:
+        db.session.rollback()  # Rollback in case of failure
+        return jsonify({'error': f'Failed to add user: {str(e)}'}), 500
+
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    """Retrieve all users."""
+    users = User.query.all()
+    return jsonify([
+        {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'rfid_id': user.rfid_id,
+            'temperature_threshold': user.temperature_threshold,
+            'light_intensity_threshold': user.light_intensity_threshold
+        }
+        for user in users
+    ])
+
+@app.route('/update_user/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    """Update thresholds for a specific user."""
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+    user.temperature_threshold = data.get('temperature_threshold', user.temperature_threshold)
+    user.light_intensity_threshold = data.get('light_intensity_threshold', user.light_intensity_threshold)
+    db.session.commit()
+    return jsonify({'message': 'User thresholds updated successfully!'})
+
+# This route assigns a tag to a user:
+@app.route('/assign_rfid', methods=['POST'])
+def assign_rfid():
+    """Assign an RFID tag to a user."""
+    data = request.get_json()
+    rfid_id = data.get('rfid_id')
+    user_id = data.get('user_id')
+
+    if not rfid_id or not user_id:
+        return jsonify({'error': 'RFID and User ID are required'}), 400
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Assign the RFID tag
+    user.rfid_id = rfid_id
+    db.session.commit()
+    return jsonify({'message': f'RFID tag {rfid_id} assigned to {user.first_name} {user.last_name}.'})
+
+# This route reads an RFID tag, verifies its validity, and returns the user's thresholds:
+@app.route('/read_rfid', methods=['POST'])
+def read_rfid():
+    """Read an RFID tag and return the user's profile."""
+    data = request.get_json()
+    rfid_id = data.get('rfid_id')
+
+    if not rfid_id:
+        return jsonify({'error': 'RFID is required'}), 400
+
+    # Find the user with the given RFID
+    user = User.query.filter_by(rfid_id=rfid_id).first()
+    if not user:
+        return jsonify({'error': 'Invalid RFID tag'}), 404
+
+    # Return the user's profile and thresholds
+    return jsonify({
+        'id': user.id,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'rfid_id': user.rfid_id,
+        'temperature_threshold': user.temperature_threshold,
+        'light_intensity_threshold': user.light_intensity_threshold
+    })
+
+# This route updates the temperature or light intensity thresholds:
+@app.route('/update_thresholds', methods=['POST'])
+def update_thresholds():
+    """Update the temperature and light intensity thresholds for a user."""
+    data = request.get_json()
+    rfid_id = data.get('rfid_id')
+
+    if not rfid_id:
+        return jsonify({'error': 'RFID is required'}), 400
+
+    user = User.query.filter_by(rfid_id=rfid_id).first()
+    if not user:
+        return jsonify({'error': 'Invalid RFID tag'}), 404
+
+    # Update the thresholds
+    user.temperature_threshold = data.get('temperature_threshold', user.temperature_threshold)
+    user.light_intensity_threshold = data.get('light_intensity_threshold', user.light_intensity_threshold)
+    db.session.commit()
+
+    return jsonify({'message': 'Thresholds updated successfully!'})
+
 # Replace with your Raspberry Pi's IP address if necessary
 if __name__ == '__main__':
     try:
         app.run(host='0.0.0.0', port=8000, debug=True)  # Run the Flask application
     finally:
         GPIO.cleanup()  # Ensures cleanup when the app stops # Run the Flask application
-
-
