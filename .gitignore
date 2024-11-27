@@ -68,5 +68,16 @@ gulpfile.tmp.*
 # Package Lock files
 /package-lock.json
 
+# Python files
 *.pyc
 __pycache__/
+
+# Flask-specific files
+instance/           # Ignore the Flask instance folder
+*.db                # Ignore SQLite database files
+*.sqlite3           # Optional: if you're using .sqlite3 as your database file extension
+
+# IDE specific
+.idea/              # PyCharm/IntelliJ
+.vscode/            # VSCode
+*.env               # Environment variables for Flask

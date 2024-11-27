@@ -14,7 +14,8 @@ const char* password = "12345678";
 //const char* password = "14730078";
 
 // MQTT Broker IP address
-const char* mqtt_server = "192.168.29.208";
+//const char* mqtt_server = "192.168.29.208";
+const char* mqtt_server = "192.168.29.214";
 //const char* mqtt_server = "192.168.0.141";
 
 // Initialize WiFi and MQTT clients
