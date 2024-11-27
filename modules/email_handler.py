@@ -2,6 +2,7 @@ import email
 import imaplib
 import smtplib
 from uuid import uuid4
+from datetime import datetime
 
 sender_email = 'santisinsight@gmail.com'
 sender_password = 'vyhx wkam hrli olmr'
@@ -13,7 +14,7 @@ session_responses = {}
 # Create a new session ID for each email sent
 current_session_id = None
 
-def send_email(recipient_email, temperature):
+def send_temperature_email(recipient_email, temperature):
     global current_session_id
     current_session_id = str(uuid4())  # Generate a new session ID
     session_responses[current_session_id] = set()  # Initialize empty set for this session
@@ -40,6 +41,59 @@ def send_email(recipient_email, temperature):
     except Exception as e:
         print(f'Failed to send email. Error: {e}')
         return False
+
+def send_light_email(recipient_email):
+    try:
+        # Email configuration
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 465
+
+        # Email content
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        subject = "Light Notification"
+        body = f"The Light is ON at {current_time}."
+        
+        message = f'Subject: {subject}\n\n{body}'
+
+        # Send the email
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, recipient_email, message)
+        server.quit()
+
+        print('Email sent successfully!')
+        return True
+    except Exception as e:
+        print(f'Failed to send email. Error: {e}')
+        return False
+
+def send_login_email(recipient_email, user):
+    try:
+        # Email configuration
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 465
+
+        # Email content
+        now = datetime.now()
+        current_time = now.strftime("%H:%M")
+        subject = "User Logged In"
+        body = f"User {user} entered at {current_time}."
+        
+        message = f'Subject: {subject}\n\n{body}'
+
+        # Send the email
+        server = smtplib.SMTP_SSL(smtp_server, smtp_port)
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, recipient_email, message)
+        server.quit()
+
+        print('Email sent successfully!')
+        return True
+    except Exception as e:
+        print(f'Failed to send email. Error: {e}')
+        return False
+
 
 def receive_email():
     print("Receive email method is being called from email.py")
