@@ -57,7 +57,7 @@ function updateFanUI(){
                 console.error('Error:', data.error);
             } else {
                 let fan_status = data.fan_state
-                console.log("FAN: " + fan_status);
+                //console.log("FAN: " + fan_status);
                 if(fan_status == "ON"){
                     document.getElementById('fanStatus').innerHTML = "ON";
                     document.getElementById('fanButton').innerHTML = "Turn Off";
@@ -108,7 +108,7 @@ function updateLightIntensity() {
     .then((data) => {
       // Assuming data has the light intensity value in `data.intensity`
       const newIntensityValue = data.light_intensity;
-      console.log(newIntensityValue)
+      //console.log(newIntensityValue)
       document.getElementById("lightIntensity").textContent = newIntensityValue;
       // Get the current time and format it as you need for the x-axis
       const date = new Date();
@@ -143,6 +143,26 @@ function updateLightIntensity() {
     .catch((error) => console.error("Error fetching light intensity data:", error));
 }
 
+function getBluetooth(){
+  console.log("HI");
+  fetch('/bluetooth')
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.error) {
+                console.error('Error:', data.error);
+            } else {
+                console.log("HI FETCH OKIE");
+                console.log(data.length);
+                document.getElementById("bluetoothCount").innerHTML = data.length;
+            }
+        })
+        .catch((error) => console.error("Error fetching sensor data:", error));
+}
 
 function updateLED(){
   fetch('/return_status')
@@ -158,7 +178,7 @@ function updateLED(){
             } else {
                 let led_status = data.led_state
                 let email_status = data.email_status
-                console.log("LED STATUS: " + led_status);
+                //console.log("LED STATUS: " + led_status);
                 if(led_status == "ON"){
                     document.getElementById('light-img').src = "../static/assets/img/icons/unicons/lightOn.jpg";
                     document.getElementById('led-status').textContent = led_status;
@@ -383,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // displayTemp();
   // setInterval(displayTemp, 1000);
   // setInterval(updateFanUI, 1000);
-  setInterval(updateLightIntensity, 3000);
-  setInterval(updateLED, 3000);
+  // setInterval(updateLightIntensity, 3000);
+  // setInterval(updateLED, 3000);
 });
 

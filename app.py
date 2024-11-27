@@ -68,11 +68,17 @@ def cleanup():
     GPIO.cleanup()  # Reset the GPIO pins to their default state
     return "GPIO cleanup done."  # Confirmation message
 
-@app.route('/bluetooth/devices', methods=['GET'])
+@app.route('/bluetooth', methods=['GET'])
 def get_bluetooth_devices():
+    print("getting bluetooth")
     devices = scan_bluetooth_devices()
+    rssi_threshold = -80
+    print(devices)
+    filtered_data = [entry for entry in devices if entry['rssi'] < rssi_threshold]
+    # Print the cleaned list
+    print(filtered_data)
     # save_devices_to_json(devices)
-    return jsonify(devices)
+    return jsonify(filtered_data)
 
 @app.route('/sensor_data', methods=['GET'])
 def get_sensor_data():
@@ -121,11 +127,11 @@ def get_light_data():
     if LIGHT_INTENSITY is None:
         return jsonify({'error': 'light_intensity is required and cannot be None'}), 400
     
-    if LIGHT_INTENSITY < 0:
+    if LIGHT_INTENSITY < 1300 :
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
         EMAIL_STATUS = "SENT"
-        send_light_email('cevelinevangelista@gmail.com')
+        send_light_email('potjackson19@gmail.com')
     else:
         GPIO.output(led_pin, GPIO.LOW)  # Turn the LED off
         EMAIL_STATUS = "UNSENT"

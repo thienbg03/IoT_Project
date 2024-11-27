@@ -1,82 +1,22 @@
 [
     {
-        "address": "71:bc:28:ac:46:93",
-        "rssi": -72,
-        "timestamp": "2024-11-25 22:06:46"
+        "address": "38:9f:5a:0c:22:ee",
+        "rssi": -80,
+        "timestamp": "2024-11-26 21:50:31"
     },
     {
-        "address": "4c:a7:ec:8f:d2:c2",
-        "rssi": -82,
-        "timestamp": "2024-11-25 22:06:46"
+        "address": "fc:58:fa:c7:f3:a2",
+        "rssi": -81,
+        "timestamp": "2024-11-26 21:50:31"
     },
     {
-        "address": "65:2a:29:27:c7:43",
-        "rssi": -60,
-        "timestamp": "2024-11-25 22:06:46"
+        "address": "e2:26:64:bc:ef:b3",
+        "rssi": -84,
+        "timestamp": "2024-11-26 21:50:31"
     },
     {
-        "address": "64:ed:b8:77:b1:95",
-        "rssi": -74,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "60:d7:c9:eb:07:62",
-        "rssi": -74,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "63:9c:0b:f1:79:3b",
-        "rssi": -45,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "64:33:32:98:e3:08",
-        "rssi": -78,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "62:fb:bc:b2:0c:cb",
-        "rssi": -75,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "4b:37:49:d2:30:8b",
-        "rssi": -82,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "cb:a0:e1:b5:1e:62",
-        "rssi": -48,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "70:4d:07:6d:8c:a1",
-        "rssi": -82,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "df:8e:1c:63:2d:8a",
-        "rssi": -86,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "eb:15:1e:a9:d4:9a",
-        "rssi": -78,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "c1:74:1b:f6:6c:7e",
-        "rssi": -73,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "4a:26:50:cd:07:1e",
-        "rssi": -77,
-        "timestamp": "2024-11-25 22:06:46"
-    },
-    {
-        "address": "55:00:62:63:6a:35",
-        "rssi": -75,
-        "timestamp": "2024-11-25 22:06:46"
+        "address": "ee:99:0c:74:ca:12",
+        "rssi": -81,
+        "timestamp": "2024-11-26 21:50:31"
     }
 ]

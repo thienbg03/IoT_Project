@@ -4,13 +4,13 @@
 const int photoResistorPin = 34;
 
 // WiFi credentials
-const char* ssid = "Ruri";
-const char* password = "12345678";
+const char* ssid = "Home";
+const char* password = "baanhemcute";
 //const char* ssid = "TP-Link_2AD8";
 //const char* password = "14730078";
 
 // MQTT Broker IP address 192.168.0.25
-const char* mqtt_server = "192.168.0.22";
+const char* mqtt_server = "192.168.0.36";                                   
 //const char* mqtt_server = "192.168.0.141";
 // MQTT Broker IP address 172.20.10.6 
 //const char* mqtt_server = "192.168.0.33";

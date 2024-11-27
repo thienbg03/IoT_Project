@@ -32,18 +32,22 @@ def scan_bluetooth_devices():
                 }
                 bluetooth_data.append(device_info)
 
-            # Overwrite the JSON file with the latest scan data
-            with open(data_file, 'w') as f:
-                json.dump(bluetooth_data, f, indent=4)
             print(f"Scan complete: {len(bluetooth_data)} devices found.")
+            return bluetooth_data
+            # Overwrite the JSON file with the latest scan data
+            # with open(data_file, 'w') as f:
+            #     json.dump(bluetooth_data, f, indent=4)
+            # 
 
         except BTLEManagementError as e:
             print(f"Bluetooth scan error: {e}")
+            break
         except Exception as e:
             print(f"Unexpected error: {e}")
+            break
 
-        # Wait for the next scan interval
-        time.sleep(scan_interval)
+        # # Wait for the next scan interval
+        # time.sleep(scan_interval)
 
 # Function to get the scanned data
 def get_bluetooth_data():
