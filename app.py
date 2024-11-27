@@ -15,7 +15,7 @@ from modules.bluetooth_scanner import scan_bluetooth_devices, get_bluetooth_data
 app = Flask(__name__)
 
 # Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/app_database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app_database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database
@@ -39,6 +39,7 @@ EMAIL_STATUS = "UNSENT"
 USER_TAG = 'default'
 email_thread_running = False
 
+@app.before_first_request
 def setup_gpio_and_db():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
@@ -46,8 +47,6 @@ def setup_gpio_and_db():
     with app.app_context():
         db.create_all()  # Creates the database tables
 
-# Call the function explicitly before running the app
-setup_gpio_and_db()
 
 @app.route('/')
 def index():
@@ -155,23 +154,61 @@ def get_light_data():
 
     return jsonify({'message': 'Data received successfully', 'light_intensity': LIGHT_INTENSITY})
 
+@app.route('/get_profile', methods=['GET'])
+def get_profile():
+    global USER_TAG 
+    user = User.query.filter_by(rfid_id=USER_TAG).first()
+
+    print(user)
+
+    if not user:
+        print("No User Found")
+        return jsonify({"error": "No User Found"}), 400 
+
+    # Return the user's profile and thresholds
+    return jsonify({
+        'id': user.id,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'rfid_id': user.rfid_id,
+        'temperature_threshold': user.temperature_threshold,
+        'light_intensity_threshold': user.light_intensity_threshold
+    })
+
+
 @app.route('/api/rfid', methods=['POST'])
 def get_rfid_data():
-    global LED_STATE, EMAIL_STATUS, LIGHT_INTENSITY  # Use the global variable to keep track of the LED state
+    global USER_TAG
     data = request.json
     if not data or "rfid_code" not in data:
         return jsonify({"error": "Invalid request, missing 'rfid_code'"}), 400
     
     # Get the RFID code from the request
     USER_TAG = data.get("rfid_code")
-    print(data)
-    print(USER_TAG)
     
+    user = User.query.filter_by(rfid_id=USER_TAG).first()
+
+    if not user:
+        try:
+            user = add_user(USER_TAG)
+        except:
+            print("error creating user")
+            return jsonify({"error": "Error creating the user"}), 400 
+
+    print(user)
+
     email_thread = Thread(target=send_login_email, args=('santisinsight@gmail.com', USER_TAG))
     email_thread.start()
 
-    return jsonify({'message': 'Data received successfully', 'light_intensity': LIGHT_INTENSITY})
-
+    # Return the user's profile and thresholds
+    return jsonify({
+        'id': user.id,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'rfid_id': user.rfid_id,
+        'temperature_threshold': user.temperature_threshold,
+        'light_intensity_threshold': user.light_intensity_threshold
+    })
 
 @app.route('/get_light_data', methods=['GET'])
 def send_light_data():
@@ -208,21 +245,19 @@ def check_email_response():
     finally:
         email_thread_running = False  # Reset the flag when done
 
-@app.route('/add_user', methods=['POST'])
-def add_user():
+def add_user(user_tag):
     """Add a new user to the database."""
     try:
-        data = request.get_json()
         new_user = User(
-            first_name=data['first_name'],
-            last_name=data['last_name'],
-            rfid_id=data['rfid_id'],
-            temperature_threshold=data['temperature_threshold'],
-            light_intensity_threshold=data['light_intensity_threshold']
+            first_name="default",
+            last_name="default",
+            rfid_id=user_tag,
+            temperature_threshold=25,
+            light_intensity_threshold=1500
         )
         db.session.add(new_user)
         db.session.commit()
-        return jsonify({'message': 'User added successfully!'})
+        return new_user
     except Exception as e:
         db.session.rollback()  # Rollback in case of failure
         return jsonify({'error': f'Failed to add user: {str(e)}'}), 500
@@ -244,7 +279,7 @@ def get_users():
         for user in users
     ])
 
-@app.route('/update_user/<int:user_id>', methods=['PUT'])
+@app.route('/update_user', methods=['PUT'])
 def update_user(user_id):
     """Update thresholds for a specific user."""
     user = User.query.get(user_id)
@@ -288,19 +323,7 @@ def read_rfid():
         return jsonify({'error': 'RFID is required'}), 400
 
     # Find the user with the given RFID
-    user = User.query.filter_by(rfid_id=rfid_id).first()
-    if not user:
-        return jsonify({'error': 'Invalid RFID tag'}), 404
-
-    # Return the user's profile and thresholds
-    return jsonify({
-        'id': user.id,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'rfid_id': user.rfid_id,
-        'temperature_threshold': user.temperature_threshold,
-        'light_intensity_threshold': user.light_intensity_threshold
-    })
+    
 
 # This route updates the temperature or light intensity thresholds:
 @app.route('/update_thresholds', methods=['POST'])

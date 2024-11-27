@@ -3,6 +3,7 @@
 let temperatureChart, growthChart, lightIntensityChart;
 let intensityArray = [];
 let timeArray = [];
+let userID = "default"
 // Function to toggle the LED state based on the switch
 function toggleLED() {
     const isOn = document.getElementById('led-switch').checked ? 'ON' : 'OFF';
@@ -23,6 +24,57 @@ function toggleLED() {
     document.getElementById('light-img').src = isOn === "ON"
         ? "../static/assets/img/icons/unicons/lightOn.jpg"
         : "../static/assets/img/icons/unicons/lightOff.jpg";
+}
+
+function updateProfile(){
+      $.ajax({
+        url: '/update_user',
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({ state: isOn }),
+        success: function (response) {
+            document.getElementById('led-status').textContent = response.led_state;
+        },
+        error: function (error) {
+            console.log('Error:', error);
+        }
+    });
+  
+}
+
+function getProfile(){
+    //console.log(data);
+  //   $.ajax({
+  //     url: '/get_profile',
+  //     type: 'GET',
+  //     contentType: 'application/json',
+  //     success: function (response) {
+  //         console.log(response)
+  //     },
+  //     error: function (error) {
+  //         console.log('Error:', error);
+  //     }
+  // });
+  fetch('/get_profile')
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data.error) {
+                console.error('Error:', data.error);
+            } else {
+                console.log(data)
+                document.getElementById("firstName").value = data.first_name
+                document.getElementById("lastName").value = data.last_name
+                document.getElementById("temperatureThreshold").value = data.temperature_threshold
+                document.getElementById("lightThreshold").value = data.light_intensity_threshold
+            }
+        })
+        .catch((error) => console.error("Error fetching sensor data:", error));
+
 }
 
 function displayTemp() {
@@ -400,10 +452,11 @@ document.addEventListener('DOMContentLoaded', function () {
     lightIntensityChart = new ApexCharts(lightChartEl, lightIntensityConfig);
     lightIntensityChart.render();
   }
-  displayTemp();
-  setInterval(displayTemp, 1000);
-  setInterval(updateFanUI, 1000);
-  setInterval(updateLightIntensity, 3000);
-  setInterval(updateLED, 3000);
+  // displayTemp();
+  // setInterval(displayTemp, 1000);
+  // setInterval(updateFanUI, 1000);
+  // setInterval(updateLightIntensity, 3000);
+  // setInterval(updateLED, 3000);
+  setInterval(getProfile, 1000);
 });
 

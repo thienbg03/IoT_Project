@@ -12,11 +12,13 @@ const char* ssid = "Ruri";
 //const char* ssid = "TP-Link_2AD8";
 const char* password = "12345678";
 //const char* password = "14730078";
+//const char* ssid = "VS-Secure";
+//const char* password = "PercyPotterson53075601";
 
 // MQTT Broker IP address
 const char* mqtt_server = "192.168.29.33";
 //const char* mqtt_server = "192.168.29.208";
-const char* mqtt_server = "192.168.29.214";
+//const char* mqtt_server = "192.168.29.214";
 //const char* mqtt_server = "192.168.0.141";
 //const char* mqtt_server = "192.168.0.129";
 // Initialize WiFi and MQTT clients
