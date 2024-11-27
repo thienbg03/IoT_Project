@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from models.user import db, User  # Import the database and User model
 import RPi.GPIO as GPIO
 from routes.dht11_routes import dht11_blueprint
 from modules.fan import turn_on_fan, turn_off_fan
@@ -13,12 +14,21 @@ from modules.bluetooth_scanner import scan_bluetooth_devices, get_bluetooth_data
 # Initialize the Flask application
 app = Flask(__name__)
 
+# Database configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app_database.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize the database
+db.init_app(app)
+
 # simulation with fake data to see if the saving works:
 # app.register_blueprint(dht11_blueprint)
 # Set up GPIO
 led_pin = 16  # Define the GPIO pin number for the LED
 DHT_PIN = 18
 
+# Initial LED statesudo apt-get install python3-rpi.gpio
+sensor = DHT11Sensor(DHT_PIN)
 
 # Start with the LED turned off
 # Initialize global states
@@ -28,14 +38,13 @@ LIGHT_INTENSITY = 0
 EMAIL_STATUS = "UNSENT"
 USER_TAG = 'default'
 email_thread_running = False
-# Initial LED statesudo apt-get install python3-rpi.gpio
-sensor = DHT11Sensor(DHT_PIN)
 
 @app.before_first_request
 def setup_gpio():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM) 
     GPIO.setup(led_pin, GPIO.OUT)  # Set GPIO pin numbering mode to BCM
+    db.create_all()  # Ensure tables are created
 
 @app.route('/')
 def index():
@@ -183,6 +192,50 @@ def check_email_response():
             sleep(5)  # Wait before checking again
     finally:
         email_thread_running = False  # Reset the flag when done
+
+@app.route('/add_user', methods=['POST'])
+def add_user():
+    """Add a new user to the database."""
+    data = request.get_json()
+    new_user = User(
+        first_name=data['first_name'],
+        last_name=data['last_name'],
+        rfid_id=data['rfid_id'],
+        temperature_threshold=data['temperature_threshold'],
+        light_intensity_threshold=data['light_intensity_threshold']
+    )
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User added successfully!'})
+
+@app.route('/users', methods=['GET'])
+def get_users():
+    """Retrieve all users."""
+    users = User.query.all()
+    return jsonify([
+        {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'rfid_id': user.rfid_id,
+            'temperature_threshold': user.temperature_threshold,
+            'light_intensity_threshold': user.light_intensity_threshold
+        }
+        for user in users
+    ])
+
+app.route('/update_user/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    """Update thresholds for a specific user."""
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+    user.temperature_threshold = data.get('temperature_threshold', user.temperature_threshold)
+    user.light_intensity_threshold = data.get('light_intensity_threshold', user.light_intensity_threshold)
+    db.session.commit()
+    return jsonify({'message': 'User thresholds updated successfully!'})
 
 # Replace with your Raspberry Pi's IP address if necessary
 if __name__ == '__main__':
