@@ -383,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
         show: true
       },
       min: 0,
-      max: 4500,
+      max: 3000,
       tickAmount: 4,
       title: {
         text: 'Intensity',  // Add title for Y-axis
@@ -400,10 +400,10 @@ document.addEventListener('DOMContentLoaded', function () {
     lightIntensityChart = new ApexCharts(lightChartEl, lightIntensityConfig);
     lightIntensityChart.render();
   }
-  // displayTemp();
-  // setInterval(displayTemp, 1000);
-  // setInterval(updateFanUI, 1000);
-  // setInterval(updateLightIntensity, 3000);
-  // setInterval(updateLED, 3000);
+  displayTemp();
+  setInterval(displayTemp, 1000);
+  setInterval(updateFanUI, 1000);
+  setInterval(updateLightIntensity, 3000);
+  setInterval(updateLED, 3000);
 });
 

@@ -9,7 +9,7 @@ def turn_off_fan():
     # Define GPIO pin assignments
     Motor1 = 22  # Enable Pin
     Motor2 = 27  # Input Pin
-    Motor3 = 17  # Input Pin
+    Motor3 = 13  # Input Pin
 
     # Set up GPIO pins as output
     GPIO.setup(Motor1, GPIO.OUT)
@@ -30,7 +30,7 @@ def turn_on_fan():
     # Define GPIO pin assignments
     Motor1 = 22  # Enable Pin
     Motor2 = 27  # Input Pin
-    Motor3 = 17  # Input Pin
+    Motor3 = 13  # Input Pin
 
     # Set up GPIO pins as output
     GPIO.setup(Motor1, GPIO.OUT)

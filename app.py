@@ -42,8 +42,10 @@ def index():
      # Set the pin as an output
     GPIO.output(led_pin, GPIO.LOW)
     send_email_trigger(5)
+    # turn_on_fan()
     return render_template('index.html', led_state=LED_STATE)
 
+# turn_on_fan()
 
 @app.route('/toggle_led', methods=['POST'])
 def toggle_led():
@@ -99,6 +101,8 @@ def toggle_fan():
 
     # Get the state from the JSON request
     data = request.get_json()
+    print("FANNNNN")
+    print(data["state"])
     #print(data['state'])
     if data['state'] == 'OFF':
         turn_on_fan()
@@ -127,7 +131,7 @@ def get_light_data():
     if LIGHT_INTENSITY is None:
         return jsonify({'error': 'light_intensity is required and cannot be None'}), 400
     
-    if LIGHT_INTENSITY < 1300 :
+    if LIGHT_INTENSITY < 400 :
         GPIO.output(led_pin, GPIO.HIGH)  # Turn the LED on
         LED_STATE = 'ON'  # Update the state variable
         EMAIL_STATUS = "SENT"
@@ -165,7 +169,7 @@ def send_light_data():
 
 def send_email_trigger(temperature):
     global email_thread_running
-    recipient = 'santisinsight@gmail.com'
+    recipient = 'potjackson19@gmail.com'
 
     # Run send_temperature_email in a separate thread
     email_thread = Thread(target=send_temperature_email, args=(recipient, temperature))
@@ -177,7 +181,7 @@ def send_email_trigger(temperature):
 
 
 def check_email_response():
-    global email_thread_running
+    global email_thread_running, FAN_STATE
     count = 0
     try:
         while count < 5:
@@ -185,6 +189,8 @@ def check_email_response():
             # Check if a response has been received
             if receive_email():
                 turn_on_fan()
+                FAN_STATE = 'ON'
+        
                 break  # Stop the loop once a valid response is received
             sleep(5)  # Wait before checking again
     finally:

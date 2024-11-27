@@ -8,15 +8,15 @@
 #define PHOTO_RESISTOR_PIN 34
 
 // WiFi credentials
-const char* ssid = "Home";
+const char* ssid = "Ruri";
 //const char* ssid = "TP-Link_2AD8";
-const char* password = "baanhemcute";
+const char* password = "12345678";
 //const char* password = "14730078";
 
 // MQTT Broker IP address
-const char* mqtt_server = "192.168.0.36";
+const char* mqtt_server = "192.168.29.33";
 //const char* mqtt_server = "192.168.0.141";
-
+//const char* mqtt_server = "192.168.0.129";
 // Initialize WiFi and MQTT clients
 WiFiClient espClient;
 PubSubClient client(espClient);
